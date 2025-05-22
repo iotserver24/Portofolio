@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { db, collection } from "../firebase";
-import { getDocs } from "firebase/firestore";
+import { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -12,7 +10,6 @@ import CardProject from "../components/CardProject";
 import TechStackIcon from "../components/TechStackIcon";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Code, Boxes } from "lucide-react";
 
 // Separate ShowMore/ShowLess button component
 const ToggleButton = ({ onClick, isShowingMore }) => (
@@ -66,6 +63,11 @@ const ToggleButton = ({ onClick, isShowingMore }) => (
     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500/50 transition-all duration-300 group-hover:w-full"></span>
   </button>
 );
+
+ToggleButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  isShowingMore: PropTypes.bool.isRequired
+};
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -237,10 +239,6 @@ export default function FullWidthTabs() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const handleChangeIndex = (index) => {
-    setValue(index);
   };
 
   const toggleShowMore = useCallback(() => {
