@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import {
   Github,
   Linkedin,
   Mail,
   ExternalLink,
-  Instagram,
   Sparkles,
 } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import PropTypes from 'prop-types';
 
 // Memoized Components
 const StatusBadge = memo(() => (
@@ -29,6 +29,7 @@ const StatusBadge = memo(() => (
     </div>
   </div>
 ));
+StatusBadge.displayName = 'StatusBadge';
 
 const MainTitle = memo(() => (
   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
@@ -49,12 +50,17 @@ const MainTitle = memo(() => (
     </h1>
   </div>
 ));
+MainTitle.displayName = 'MainTitle';
 
 const TechStack = memo(({ tech }) => (
   <div className="px-4 py-2 hidden sm:block rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
     {tech}
   </div>
 ));
+TechStack.displayName = 'TechStack';
+TechStack.propTypes = {
+  tech: PropTypes.string.isRequired
+};
 
 const CTAButton = memo(({ href, text, icon: Icon }) => (
   <a href={href}>
@@ -78,6 +84,12 @@ const CTAButton = memo(({ href, text, icon: Icon }) => (
     </button>
   </a>
 ));
+CTAButton.displayName = 'CTAButton';
+CTAButton.propTypes = {
+  href: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired
+};
 
 const SocialLink = memo(({ icon: Icon, link }) => (
   <a href={link} target="_blank" rel="noopener noreferrer">
@@ -89,6 +101,11 @@ const SocialLink = memo(({ icon: Icon, link }) => (
     </button>
   </a>
 ));
+SocialLink.displayName = 'SocialLink';
+SocialLink.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  link: PropTypes.string.isRequired
+};
 
 // Constants
 const TYPING_SPEED = 100;
@@ -162,16 +179,11 @@ const Home = () => {
     src: "https://lottie.host/58753882-bb6a-49f5-a2c0-950eda1e135a/NLbpVqGegK.lottie",
     loop: true,
     autoplay: true,
+    renderer: "svg",
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
       progressiveLoad: true,
-    },
-    style: { width: "100%", height: "100%" },
-    className: `w-full h-full transition-all duration-500 ${
-      isHovering
-        ? "scale-[180%] sm:scale-[160%] md:scale-[150%] lg:scale-[145%] rotate-2"
-        : "scale-[175%] sm:scale-[155%] md:scale-[145%] lg:scale-[140%]"
-    }`,
+    }
   };
 
   return (
