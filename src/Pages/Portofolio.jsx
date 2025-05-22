@@ -293,19 +293,24 @@ export default function FullWidthTabs() {
           </Tabs>
         </AppBar>
         <TabPanel value={value} index={0} dir={theme.direction}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedProjects.map((project) => (
-              <CardProject
-                key={project.id}
-                Img={project.Img}
-                Title={project.Title}
-                Description={project.Description}
-                Link={project.Link}
-                Github={project.Github}
-                TechStack={project.TechStack}
-                Features={project.Features}
-              />
-            ))}
+          <div className="container mx-auto flex justify-center items-center overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-5">
+              {displayedProjects.map((project, index) => (
+                <div
+                  key={project.id || index}
+                  data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
+                  data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
+                >
+                  <CardProject
+                    Img={project.Img}
+                    Title={project.Title}
+                    Description={project.Description}
+                    Link={project.Link}
+                    id={project.id}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
           {projects.length > initialItems && (
             <div className="flex justify-center mt-8">
@@ -314,10 +319,18 @@ export default function FullWidthTabs() {
           )}
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {techStacks.map((tech, index) => (
-              <TechStackIcon key={index} TechStackIcon={tech.icon} Language={tech.language} />
-            ))}
+          <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
+              {techStacks.map((stack, index) => (
+                <div
+                  key={index}
+                  data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
+                  data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
+                >
+                  <TechStackIcon TechStackIcon={stack.icon} Language={stack.language} />
+                </div>
+              ))}
+            </div>
           </div>
         </TabPanel>
       </Box>
