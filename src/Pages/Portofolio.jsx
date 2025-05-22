@@ -267,7 +267,7 @@ export default function FullWidthTabs() {
         </p>
       </div>
 
-      <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
+      <Box sx={{ bgcolor: 'transparent', width: '100%' }}>
         <AppBar position="static" sx={{ bgcolor: 'transparent', boxShadow: 'none' }}>
           <Tabs
             value={value}
@@ -295,7 +295,16 @@ export default function FullWidthTabs() {
         <TabPanel value={value} index={0} dir={theme.direction}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayedProjects.map((project) => (
-              <CardProject key={project.id} project={project} />
+              <CardProject
+                key={project.id}
+                Img={project.Img}
+                Title={project.Title}
+                Description={project.Description}
+                Link={project.Link}
+                Github={project.Github}
+                TechStack={project.TechStack}
+                Features={project.Features}
+              />
             ))}
           </div>
           {projects.length > initialItems && (
@@ -307,7 +316,7 @@ export default function FullWidthTabs() {
         <TabPanel value={value} index={1} dir={theme.direction}>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {techStacks.map((tech, index) => (
-              <TechStackIcon key={index} icon={tech.icon} language={tech.language} />
+              <TechStackIcon key={index} TechStackIcon={tech.icon} Language={tech.language} />
             ))}
           </div>
         </TabPanel>
