@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { db, collection } from "../firebase";
 import { getDocs } from "firebase/firestore";
 import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
@@ -240,6 +239,10 @@ export default function FullWidthTabs() {
     setValue(newValue);
   };
 
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
+
   const toggleShowMore = useCallback(() => {
     setShowAllProjects(prev => !prev);
   }, []);
@@ -266,8 +269,8 @@ export default function FullWidthTabs() {
         </p>
       </div>
 
-      <Box sx={{ bgcolor: "transparent" }}>
-        <AppBar position="static" sx={{ bgcolor: "transparent", boxShadow: "none" }}>
+      <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
+        <AppBar position="static" sx={{ bgcolor: 'transparent', boxShadow: 'none' }}>
           <Tabs
             value={value}
             onChange={handleChange}
@@ -276,81 +279,40 @@ export default function FullWidthTabs() {
             variant="fullWidth"
             aria-label="full width tabs example"
             sx={{
-              "& .MuiTabs-indicator": {
-                backgroundColor: "#a855f7",
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#8B5CF6',
               },
-              "& .MuiTab-root": {
-                color: "#e2d3fd",
-                "&.Mui-selected": {
-                  color: "#a855f7",
+              '& .MuiTab-root': {
+                color: '#94A3B8',
+                '&.Mui-selected': {
+                  color: '#F8FAFC',
                 },
               },
             }}
           >
-            <Tab
-              icon={<Code className="mb-2 w-5 h-5 transition-all duration-300" />}
-              label="Projects"
-              {...a11yProps(0)}
-            />
-            <Tab
-              icon={<Boxes className="mb-2 w-5 h-5 transition-all duration-300" />}
-              label="Tech Stack"
-              {...a11yProps(1)}
-            />
+            <Tab label="Projects" {...a11yProps(0)} />
+            <Tab label="Tech Stack" {...a11yProps(1)} />
           </Tabs>
         </AppBar>
-
-        <SwipeableViews
-          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-          index={value}
-          onChangeIndex={setValue}
-        >
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            <div className="container mx-auto flex justify-center items-center overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-5">
-                {displayedProjects.map((project, index) => (
-                  <div
-                    key={project.id || index}
-                    data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
-                    data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
-                  >
-                    <CardProject
-                      Img={project.Img}
-                      Title={project.Title}
-                      Description={project.Description}
-                      Link={project.Link}
-                      id={project.id}
-                    />
-                  </div>
-                ))}
-              </div>
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayedProjects.map((project) => (
+              <CardProject key={project.id} project={project} />
+            ))}
+          </div>
+          {projects.length > initialItems && (
+            <div className="flex justify-center mt-8">
+              <ToggleButton onClick={toggleShowMore} isShowingMore={showAllProjects} />
             </div>
-            {projects.length > initialItems && (
-              <div className="mt-6 w-full flex justify-start">
-                <ToggleButton
-                  onClick={() => toggleShowMore()}
-                  isShowingMore={showAllProjects}
-                />
-              </div>
-            )}
-          </TabPanel>
-
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
-                {techStacks.map((stack, index) => (
-                  <div
-                    key={index}
-                    data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
-                    data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
-                  >
-                    <TechStackIcon TechStackIcon={stack.icon} Language={stack.language} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabPanel>
-        </SwipeableViews>
+          )}
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {techStacks.map((tech, index) => (
+              <TechStackIcon key={index} icon={tech.icon} language={tech.language} />
+            ))}
+          </div>
+        </TabPanel>
       </Box>
     </div>
   );
