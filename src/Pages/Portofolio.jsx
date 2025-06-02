@@ -139,6 +139,20 @@ export default function FullWidthTabs() {
     try {
       const projectsData = [
         {
+          id: 6,
+          Title: "Coderfy",
+          Description: "A platform to build a complete Next.js codebase with AI for free. Still in progress.",
+          Img: "/public/projects/coderfy.png",
+          Link: "https://coderfy.megavault.in",
+          Github: "Private",
+          TechStack: ["Next.js", "AI", "Web"],
+          Features: [
+            "Generate full Next.js codebases using AI",
+            "Completely free to use",
+            "Ongoing development with new features being added"
+          ]
+        },
+        {
           id: 1,
           Title: "MegaVault (Legacy Version)",
           Description: "A cloud storage solution offering unlimited storage with various plans, featuring encrypted storage, sharable links, video streaming capabilities, and a user-friendly interface.",
@@ -223,7 +237,8 @@ export default function FullWidthTabs() {
             "Offline Downloads",
             "Watch History"
           ]
-        }
+        },
+        
       ];
 
       setProjects(projectsData);
