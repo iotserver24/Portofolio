@@ -150,7 +150,8 @@ export default function FullWidthTabs() {
             "Generate full Next.js codebases using AI",
             "Completely free to use",
             "Ongoing development with new features being added"
-          ]
+          ],
+          Tag: "Currently Working"
         },
         {
           id: 1,
@@ -322,6 +323,7 @@ export default function FullWidthTabs() {
                       Description={project.Description}
                       Link={project.Link}
                       id={project.id}
+                      Tag={project.Tag}
                     />
                   </div>
                 ))}
