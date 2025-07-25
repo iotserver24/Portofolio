@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   Sparkles,
   UserCheck,
+  ExternalLink,
 } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -229,6 +230,19 @@ const AboutPage = () => {
                 >
                   <UserCheck className="w-5 h-5" />
                   Connect with Me
+                </button>
+              </a>
+              <a
+                href="/donate"
+                className="w-full lg:w-auto"
+              >
+                <button
+                  data-aos="fade-up"
+                  data-aos-duration="800"
+                  className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg bg-gradient-to-r from-green-400 to-teal-400 text-white font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 shadow-lg hover:shadow-xl"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  Donate
                 </button>
               </a>
             </div>

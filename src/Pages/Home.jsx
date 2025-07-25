@@ -249,6 +249,7 @@ const Home = () => {
                     icon={ExternalLink}
                   />
                   <CTAButton href="#Contact" text="Contact" icon={Mail} />
+                  <CTAButton href="/donate" text="Donate" icon={ExternalLink} />
                 </div>
 
                 {/* Social Links */}

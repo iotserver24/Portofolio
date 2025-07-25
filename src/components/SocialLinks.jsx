@@ -212,6 +212,33 @@ const SocialLinks = () => {
                             translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
             </div>
           </a>
+          {/* Donate Button Row */}
+          <a
+            href="/donate"
+            className="group relative flex items-center gap-3 p-4 rounded-xl 
+                     bg-white/5 border border-white/10 overflow-hidden
+                     hover:border-white/20 transition-all duration-500"
+          >
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 bg-gradient-to-r from-green-400 via-green-500 to-teal-400" />
+            <div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 opacity-20 rounded-lg transition-all duration-500 group-hover:scale-125 group-hover:opacity-30 bg-green-400" />
+              <div className="relative p-2 rounded-lg">
+                <ExternalLink className="w-5 h-5 transition-all duration-500 group-hover:scale-110 text-green-500" />
+              </div>
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors duration-300">
+                Donate
+              </span>
+              <span className="text-xs text-gray-400 truncate group-hover:text-gray-300 transition-colors duration-300">
+                Support my work
+              </span>
+            </div>
+            <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-white ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-0 -translate-x-2" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+            </div>
+          </a>
         </div>
       </div>
     </div>
