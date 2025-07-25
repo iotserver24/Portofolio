@@ -30,6 +30,7 @@
     "framer-motion": "^11.15.0",
     "gsap": "^3.12.5",
     "headlessui": "^0.0.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.454.0",
     "portofolio-v5": "file:",
     "react": "^18.3.1",

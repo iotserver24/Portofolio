@@ -11,6 +11,7 @@ import ProjectDetails from "./components/ProjectDetail";
 import WelcomeScreen from "./Pages/WelcomeScreen";
 import { AnimatePresence } from 'framer-motion';
 import Donate from "./Pages/Donate";
+import NotFound from "./Pages/NotFound";
 
 const LandingPage = ({ showWelcome, setShowWelcome }) => {
   return (
@@ -66,6 +67,7 @@ function App() {
         <Route path="/" element={<LandingPage showWelcome={showWelcome} setShowWelcome={setShowWelcome} />} />
         <Route path="/project/:id" element={<ProjectPageLayout />} />
         <Route path="/donate" element={<Donate />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
