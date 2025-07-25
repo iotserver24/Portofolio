@@ -221,14 +221,23 @@ const ProjectDetails = () => {
 
             <div className="space-y-6 md:space-y-10 animate-slideInRight">
               <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
-              
-                <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {project.id === 7 ? (
+                <video
+                  src="https://bucket.anisurge.me/0712-02_1752326506968.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full object-cover rounded-2xl"
+                  style={{ minHeight: '320px', background: '#181828' }}
+                />
+              ) : (
                 <img
                   src={project.Img}
                   alt={project.Title}
                   className="w-full  object-cover transform transition-transform duration-700 will-change-transform group-hover:scale-105"
-                  onLoad={() => setIsImageLoaded(true)}
                 />
+              )}
                 <div className="absolute inset-0 border-2 border-white/0 group-hover:border-white/10 transition-colors duration-300 rounded-2xl" />
               </div>
 

@@ -139,6 +139,24 @@ export default function FullWidthTabs() {
     try {
       const projectsData = [
         {
+          id: 7,
+          Title: "Codex",
+          Description: "Codex is a Node.js-based, closed-source, free platform for building websites and apps. It offers 20+ free AI models, seamless GitHub integration, and tools to deploy, manage, and experiment with modern web applications. Explore more at codex.anishkumar.tech/docs.",
+          Img: "https://codex.anishkumar.tech/img/logo.png",
+          Link: "https://codex.anishkumar.tech",
+          Github: "Private",
+          TechStack: ["Node.js", "AI", "Web", "Tools"],
+          Features: [
+            "Build and deploy websites/apps for free",
+            "Access to 20+ AI models for various tasks",
+            "Connect and deploy directly from GitHub",
+            "Modern, user-friendly interface",
+            "Fast, reliable, and scalable platform",
+            "Comprehensive documentation and support"
+          ],
+          Tag: "Currently Working"
+        },
+        {
           id: 6,
           Title: "Coderfy",
           Description: "A platform to build a complete Next.js codebase with AI for free. Still in progress.",
@@ -151,7 +169,7 @@ export default function FullWidthTabs() {
             "Completely free to use",
             "Ongoing development with new features being added"
           ],
-          Tag: "Currently Working"
+          Tag: "Halted Project"
         },
         {
           id: 1,
@@ -239,7 +257,23 @@ export default function FullWidthTabs() {
             "Watch History"
           ]
         },
-        
+        {
+          id: 8,
+          Title: "BYTLIN",
+          Description: "BYTLIN is a next-generation IT consultancy and SaaS enabler, empowering businesses to modernize with automation and AI tools. Built for a client, it delivers tailored digital transformation, process automation, and SaaS implementation solutions. Learn more at bytlin.anishkumar.tech.",
+          Img: "https://bytlin.anishkumar.tech/favicon.ico", // Placeholder, replace with a better image if available
+          Link: "https://bytlin.anishkumar.tech/",
+          Github: "Private",
+          TechStack: ["Automation", "AI", "SaaS", "Consulting", "Web"],
+          Features: [
+            "Elite IT consulting for digital transformation",
+            "Custom automation and SaaS enablement",
+            "Industry-specific solutions for efficiency and growth",
+            "Enterprise-grade security and rapid implementation",
+            "Ongoing optimization and support"
+          ],
+          Tag: "Client Project"
+        },
       ];
 
       setProjects(projectsData);
