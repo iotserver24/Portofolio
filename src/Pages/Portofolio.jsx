@@ -208,35 +208,40 @@ export default function FullWidthTabs() {
         {
           id: 3,
           Title: "Video-Gen",
-          Description: "A Text Match Cut Video Generator that allows users to create videos by inputting text, with customizable settings for video format, resolution, and styles.",
+          Description: "A Text Match Cut Video Generator that allows users to create videos by inputting text, with customizable settings for video format, resolution, and styles. Open source AI video generation tool.",
           Img: "/projects/video-gen.png",
           Link: "https://video-gen.megavault.in",
           Github: "https://github.com/iotserver24/match-cut-ai",
-          TechStack: ["JavaScript", "TailwindCSS", "FFmpeg", "Railway", "CDN"],
+          TechStack: ["JavaScript", "TailwindCSS", "FFmpeg", "Railway", "CDN", "AI"],
           Features: [
             "Accepts scripts or raw text as input",
             "Custom duration, FPS, resolution options",
             "Style presets: cinematic, retro, glitch, clean, modern",
             "Background music and voiceover (coming soon)",
             "API support for batch rendering",
-            "Progress tracking and download status updates"
-          ]
+            "Progress tracking and download status updates",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Open Source"
         },
         {
           id: 4,
           Title: "Pollin-Coder",
-          Description: "An AI-powered code generator that helps users build applications by turning their ideas into code, utilizing OpenAI's GPT-4.1.",
+          Description: "An AI-powered code generator that helps users build applications by turning their ideas into code, utilizing OpenAI's GPT-4.1. Now open source with 1.5k+ projects generated!",
           Img: "/projects/pollin-coder.png",
           Link: "https://pollin-coder.megavault.in",
-          Github: "Private",
-          TechStack: ["OpenAI GPT-4.1", "ReactJS", "Tailwind UI", "Pollinations API"],
+          Github: "https://github.com/iotserver24/pollin-coder",
+          TechStack: ["OpenAI GPT-4.1", "ReactJS", "Tailwind UI", "Pollinations API", "Next.js", "TypeScript"],
           Features: [
             "Input your app idea in plain English",
             "Choose tech stack or let the AI decide",
             "Code split into multiple files (modular)",
             "Live preview and export functionality",
-            "Project Gallery showcasing previous outputs"
-          ]
+            "Project Gallery showcasing previous outputs",
+            "Open source - contribute and improve",
+            "1.5k+ projects generated successfully"
+          ],
+          Tag: "Open Source"
         },
         {
           id: 5,
