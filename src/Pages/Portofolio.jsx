@@ -160,7 +160,7 @@ export default function FullWidthTabs() {
           id: 6,
           Title: "Coderfy",
           Description: "A platform to build a complete Next.js codebase with AI for free. Still in progress.",
-          Img: "/public/projects/coderfy.png",
+          Img: "https://coderfy.megavault.in/logo.png",
           Link: "https://coderfy.megavault.in",
           Github: "Private",
           TechStack: ["Next.js", "AI", "Web"],
