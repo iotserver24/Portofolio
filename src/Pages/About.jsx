@@ -130,11 +130,8 @@ const AboutPage = () => {
     const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
     
     // Calculate years of experience from January 2023 to now
-    const startDate = new Date('2023-01-01');
     const currentDate = new Date();
-    const diffInMonths = (currentDate.getFullYear() - startDate.getFullYear()) * 12 + 
-                         (currentDate.getMonth() - startDate.getMonth());
-    const yearsOfExperience = Math.floor(diffInMonths / 12);
+    const yearsOfExperience = currentDate.getFullYear() - 2023;
     
     return {
       totalProjects: storedProjects.length,
