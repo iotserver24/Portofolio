@@ -128,9 +128,14 @@ const AboutPage = () => {
   // Memoized calculations
   const { totalProjects, YearExperience } = useMemo(() => {
     const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+    
+    // Calculate years of experience from January 2023 to now
+    const currentDate = new Date();
+    const yearsOfExperience = currentDate.getFullYear() - 2023;
+    
     return {
       totalProjects: storedProjects.length,
-      YearExperience: 1, // Set to 1 year of experience
+      YearExperience: yearsOfExperience,
     };
   }, []);
 
