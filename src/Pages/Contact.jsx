@@ -43,31 +43,40 @@ const ContactPage = () => {
     try {
       // Get form data
       const form = e.target;
-      const formData = new FormData(form);
+      const formDataToSend = new FormData(form);
 
-      // Submit form
-      await form.submit();
-
-      // Show success message
-      Swal.fire({
-        title: 'Success!',
-        text: 'Your message has been sent successfully!',
-        icon: 'success',
-        confirmButtonColor: '#6366f1',
-        timer: 2000,
-        timerProgressBar: true
+      // Submit form via fetch to prevent redirect
+      const response = await fetch('https://formsubmit.co/ajax/iotserver24@gmail.com', {
+        method: 'POST',
+        body: formDataToSend
       });
 
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
-      });
+      const result = await response.json();
+
+      if (result.success) {
+        // Show success message
+        Swal.fire({
+          title: 'Success!',
+          text: 'Your message has been sent successfully!',
+          icon: 'success',
+          confirmButtonColor: '#6366f1',
+          timer: 2000,
+          timerProgressBar: true
+        });
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+        });
+      } else {
+        throw new Error(result.message || 'Failed to send message');
+      }
     } catch (error) {
       Swal.fire({
         title: 'Error!',
-        text: 'Something went wrong. Please try again later.',
+        text: error.message || 'Something went wrong. Please try again later.',
         icon: 'error',
         confirmButtonColor: '#6366f1'
       });
@@ -129,7 +138,7 @@ const ContactPage = () => {
             </div>
 
             <form 
-              action="https://formsubmit.co/support@megavault.in"
+              action="https://formsubmit.co/iotserver24@gmail.com"
               method="POST"
               onSubmit={handleSubmit}
               className="space-y-6"

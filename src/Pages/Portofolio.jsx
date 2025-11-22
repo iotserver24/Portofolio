@@ -140,10 +140,10 @@ export default function FullWidthTabs() {
       const projectsData = [
         {
           id: 7,
-          Title: "Codex",
-          Description: "Codex is a Node.js-based, closed-source, free platform for building websites and apps. It offers 20+ free AI models, seamless GitHub integration, and tools to deploy, manage, and experiment with modern web applications. Explore more at codex.anishkumar.tech/docs.",
-          Img: "https://codex.anishkumar.tech/img/logo.png",
-          Link: "https://codex.anishkumar.tech",
+          Title: "Xibe AI",
+          Description: "Xibe AI is a Node.js-based, closed-source, free platform for building websites and apps. It offers 20+ free AI models, seamless GitHub integration, and tools to deploy, manage, and experiment with modern web applications. Explore more at xibe.app/docs.",
+          Img: "/xibe-logo.png",
+          Link: "https://xibe.app",
           Github: "Private",
           TechStack: ["Node.js", "AI", "Web", "Tools"],
           Features: [
@@ -157,26 +157,73 @@ export default function FullWidthTabs() {
           Tag: "Currently Working"
         },
         {
-          id: 6,
-          Title: "Coderfy",
-          Description: "A platform to build a complete Next.js codebase with AI for free. Still in progress.",
-          Img: "https://coderfy.megavault.in/logo.png",
-          Link: "https://coderfy.megavault.in",
-          Github: "Private",
-          TechStack: ["Next.js", "AI", "Web"],
+          id: 10,
+          Title: "Xibe Chat",
+          Description: "A modern, cross-platform AI chat application built with Flutter. Features multiple AI models, code execution with live previews, image generation, and more. Bring your own API key to use various AI providers.",
+          Img: "/xibe-chat-logo.png",
+          Link: "https://chat.xibe.app",
+          Github: "https://github.com/iotserver24/Xibe-chat-app",
+          TechStack: ["Flutter", "Dart", "E2B Sandbox", "CodeSandbox", "SQLite", "AI Models"],
           Features: [
-            "Generate full Next.js codebases using AI",
-            "Completely free to use",
-            "Ongoing development with new features being added"
+            "Bring your own API key for multiple AI providers",
+            "Code execution with live previews (E2B & CodeSandbox)",
+            "Image generation capabilities",
+            "Multiple AI models support (OpenAI, Anthropic, DeepSeek, Mistral, etc.)",
+            "Cross-platform: Android, iOS, Windows, macOS, Linux",
+            "Persistent chat history with SQLite",
+            "Markdown support with code highlighting",
+            "Open source - contribute and improve"
           ],
-          Tag: "Halted Project"
+          Tag: "Open Source"
+        },
+        {
+          id: 11,
+          Title: "Xibe Chat CLI",
+          Description: "A beautiful, feature-rich Python CLI application that brings AI text generation, image generation, and intelligent CLI automation directly to your terminal. Built with Python and featuring a rich interface powered by Rich library.",
+          Img: "/xibe-chat-logo.png",
+          Link: "https://pypi.org/project/xibe-chat-cli",
+          Github: "https://github.com/iotserver24/xibe-chat-cli",
+          TechStack: ["Python", "Rich", "Prompt Toolkit", "AI Models", "CLI"],
+          Features: [
+            "AI-powered text generation and chat",
+            "Image generation with multiple models (flux, kontext, turbo, etc.)",
+            "Intelligent Agent Mode for CLI automation",
+            "Natural language task execution",
+            "Beautiful terminal interface with Rich library",
+            "Smart query analysis and intent recognition",
+            "Conversational AI intelligence",
+            "Available on PyPI - easy installation",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Open Source"
+        },
+        {
+          id: 12,
+          Title: "PR Review Bot",
+          Description: "An AI-powered GitHub bot that automatically reviews pull requests for free and unlimited. Uses advanced AI to analyze code quality, check each file, and provide comprehensive feedback on your PRs.",
+          Img: "/pr-logo.png",
+          Link: "https://pr.xibe.app",
+          Github: "https://github.com/iotserver24/PR-REVIEW-XIBE",
+          TechStack: ["Node.js", "JavaScript", "OpenAI API", "GitHub API", "Docker"],
+          Features: [
+            "Free and unlimited PR reviews",
+            "AI-powered code analysis and suggestions",
+            "Reviews each file in the pull request",
+            "Comprehensive code quality feedback",
+            "Deploy as GitHub App or bot",
+            "Easy setup and configuration",
+            "Docker support for easy deployment",
+            "Real-time PR review comments",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Open Source"
         },
         {
           id: 1,
           Title: "MegaVault (Legacy Version)",
           Description: "A cloud storage solution offering unlimited storage with various plans, featuring encrypted storage, sharable links, video streaming capabilities, and a user-friendly interface.",
           Img: "/projects/megavault.png",
-          Link: "https://megavault.in",
+          Link: "https://megavault.pw",
           Github: "Private",
           TechStack: ["Node.js", "Express.js", "Railway.app", "Pyrogram", "Razorpay", "Brevo", "Cloudflare Workers", "HTML/CSS", "JavaScript"],
           Features: [
@@ -191,19 +238,22 @@ export default function FullWidthTabs() {
         {
           id: 2,
           Title: "Sub.MegaVault",
-          Description: "An evolved version of MegaVault, focusing on structured and scalable cloud storage with tiered plans, enhanced security, and improved user experience.",
+          Description: "An open-source, S3-compatible cloud storage solution built with Next.js. Features secure file storage, user management, and support for multiple S3-compatible storage providers like Cloudflare R2, AWS S3, and more.",
           Img: "/projects/sub-megavault.png",
-          Link: "https://sub.megavault.in",
-          Github: "Private",
-          TechStack: ["Custom UI", "JavaScript", "Enterprise-grade encryption", "Advanced access controls"],
+          Link: "https://sub.megavault.pw",
+          Github: "https://github.com/iotserver24/S3-MegaVault",
+          TechStack: ["Next.js", "TypeScript", "Redis", "S3-Compatible Storage", "Tailwind CSS"],
           Features: [
-            "Secure file storage with enterprise-grade encryption",
-            "Customizable permissions and secure sharing links",
-            "Real-time synchronization across devices",
-            "Detailed storage analytics",
-            "Automatic cloud backup and recovery",
-            "Industry-leading security standards"
-          ]
+            "S3-compatible storage (Cloudflare R2, AWS S3, DigitalOcean Spaces, etc.)",
+            "Secure file storage with signed URLs",
+            "User authentication and management",
+            "File upload, download, and sharing",
+            "Redis for data persistence",
+            "Docker deployment support",
+            "Mobile app support (Flutter - in development)",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Open Source"
         },
         {
           id: 3,
@@ -249,7 +299,7 @@ export default function FullWidthTabs() {
           Description: "A free anime streaming app with a public chat feature that allows users to chat with AI characters powered by Pollinations AI.",
           Img: "/projects/anisurge.png",
           Link: "https://anisurge.me",
-          Github: "Private",
+          Github: "https://github.com/iotserver24/anipro-app.git",
           TechStack: ["Custom UI", "JavaScript", "Pollinations AI", "Android"],
           Features: [
             "Watch anime in HD quality for free",
@@ -260,7 +310,8 @@ export default function FullWidthTabs() {
             "My Anime List",
             "Offline Downloads",
             "Watch History"
-          ]
+          ],
+          Tag: "Open Source"
         },
         {
           id: 8,
@@ -278,6 +329,60 @@ export default function FullWidthTabs() {
             "Ongoing optimization and support"
           ],
           Tag: "Client Project"
+        },
+        {
+          id: 9,
+          Title: "Free-Mail",
+          Description: "A free platform for creating custom domain email addresses without requiring additional SMTP setup. Built using Cloudflare Workers, Cloudflare Email Routing, Brevo SMTP, and MongoDB to provide a seamless email solution.",
+          Img: "/projects/free-mail.png",
+          Link: "",
+          Github: "https://github.com/iotserver24/free-mail.git",
+          TechStack: ["Cloudflare Workers", "Cloudflare Email Routing", "Brevo SMTP", "MongoDB", "JavaScript"],
+          Features: [
+            "Create custom domain email addresses for free",
+            "No additional SMTP configuration required",
+            "Powered by Cloudflare Workers and Email Routing",
+            "Integrated with Brevo SMTP for reliable delivery",
+            "MongoDB for data storage and management",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Currently Working"
+        },
+        {
+          id: 13,
+          Title: "Lazy Certificate",
+          Description: "A powerful web-based certificate generator that allows you to create professional certificates in bulk. Upload your template, define text areas, customize typography, and generate certificates for multiple recipients at once.",
+          Img: "/lazy-logo.png",
+          Link: "https://certi.anishkumar.tech",
+          Github: "https://github.com/iotserver24/lazy-certificate",
+          TechStack: ["Next.js", "TypeScript", "Tailwind CSS", "Radix UI", "HTML5 Canvas"],
+          Features: [
+            "Template upload support (PNG, JPEG, JPG up to 10MB)",
+            "Interactive text areas with click and drag",
+            "Rich typography controls (30+ Google Fonts + custom fonts)",
+            "Batch generation for multiple recipients",
+            "CSV import for bulk name processing",
+            "Real-time preview of certificates",
+            "Zoom and grid controls for precision editing",
+            "Bulk download as ZIP file",
+            "Open source - contribute and improve"
+          ],
+          Tag: "Open Source"
+        },
+        {
+          id: 6,
+          Title: "Coderfy",
+          Description: "A platform to build a complete Next.js codebase with AI for free. Still in progress.",
+          Img: "https://coderfy.megavault.in/logo.png",
+          Link: "https://coderfy.megavault.in",
+          Github: "Private",
+          TechStack: ["Next.js", "AI", "Web"],
+          Features: [
+            "Generate full Next.js codebases using AI",
+            "Completely free to use",
+            "Ongoing development with new features being added"
+          ],
+          Tag: "Halted Project"
         },
       ];
 
