@@ -170,7 +170,7 @@ export function MobileLockScreen({
               aria-label={isTorchOn ? "Turn torch off" : "Turn torch on"}
             >
               <img
-                src="/os-icons/torch.svg"
+                src={isTorchOn ? "/os-icons/torch-on.svg" : "/os-icons/torch.svg"}
                 alt=""
                 className={isTorchOn ? "h-5 w-5 opacity-100" : "h-5 w-5 opacity-90"}
                 draggable={false}
