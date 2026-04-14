@@ -19,11 +19,16 @@ function useIsMobileBreakpoint() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const update = () => setIsMobile(mq.matches);
+    const mqCoarse = window.matchMedia("(pointer: coarse)");
+    const update = () =>
+      setIsMobile(window.innerWidth <= 820 || mqCoarse.matches);
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    window.addEventListener("resize", update);
+    mqCoarse.addEventListener("change", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      mqCoarse.removeEventListener("change", update);
+    };
   }, []);
 
   return isMobile;

@@ -14,14 +14,24 @@ export function MobileAppView({
   const startYRef = useRef<number | null>(null);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   return (
     <div className="pointer-events-auto relative h-full w-full">
       <div
         className="h-full w-full"
         style={{
-          transform: `translateY(${dragY}px)`,
-          transition: isDragging ? undefined : "transform 160ms ease",
+          transform: `translateY(${entered ? dragY : 18}px)`,
+          opacity: entered ? 1 : 0,
+          transition: isDragging
+            ? undefined
+            : "transform 220ms cubic-bezier(0.2,0.9,0.2,1), opacity 220ms ease",
+        }}
+        ref={(node) => {
+          if (!node) return;
+          if (entered) return;
+          // trigger enter animation after mount
+          requestAnimationFrame(() => setEntered(true));
         }}
       >
         <header className="px-5 pb-3 pt-6">

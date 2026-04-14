@@ -11,35 +11,62 @@ export function MobileHome({
   onOpenApp: (appId: AppId) => void;
 }) {
   const resolved: OSApp[] = apps.map((id) => appsById[id]).filter(Boolean);
+  const dock = resolved.slice(0, 4);
+  const grid = resolved.slice(0, 12);
 
   return (
-    <div className="pointer-events-auto h-full w-full">
-      <div className="mx-auto flex h-full max-w-md flex-col px-5 pb-6 pt-6">
-        <div className="flex items-center justify-between text-[12px] text-white/80">
-          <div className="font-medium tracking-tight">Portfolio OS</div>
-          <div className="text-white/60">iotserver24</div>
+    <div className="pointer-events-auto relative h-full w-full px-5 pb-8 pt-3">
+      {/* iOS-ish status bar */}
+      <div className="flex items-center justify-between px-1 pt-2 text-[12px] font-medium text-white/85">
+        <div className="tracking-tight">9:41</div>
+        <div className="flex items-center gap-2 text-white/70">
+          <span>Wi‑Fi</span>
+          <span>▮▮▮</span>
         </div>
+      </div>
 
-        <div className="mt-8 grid grid-cols-3 gap-5">
-          {resolved.map((app) => (
+      {/* Home grid */}
+      <div className="mx-auto mt-8 w-[min(420px,100%)]">
+        <div className="grid grid-cols-4 gap-x-5 gap-y-6">
+          {grid.map((app) => (
             <button
               key={app.id}
               type="button"
               onClick={() => onOpenApp(app.id)}
-              className="flex flex-col items-center gap-2 rounded-2xl px-2 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/20 active:scale-[0.98]"
+              className="flex flex-col items-center gap-2 rounded-2xl px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-white/20 active:scale-[0.98]"
               aria-label={`Open ${app.name}`}
             >
               {app.icon}
-              <div className="text-center text-[11px] font-medium tracking-tight text-white/85">
+              <div className="max-w-[76px] truncate text-center text-[11px] font-medium tracking-tight text-white/90">
                 {app.name}
               </div>
             </button>
           ))}
         </div>
 
-        <div className="mt-auto pt-10">
-          <div className="rounded-3xl border border-white/12 bg-[rgba(10,10,12,0.62)] px-4 py-3 text-[11px] text-white/75 shadow-[0_18px_70px_rgba(0,0,0,0.55)]">
-            Tap an app to open. Swipe down in an app to close.
+        {/* Page dots */}
+        <div className="mt-6 flex items-center justify-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
+          <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
+          <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
+        </div>
+      </div>
+
+      {/* iOS dock */}
+      <div className="absolute bottom-6 left-1/2 w-[min(420px,calc(100vw-40px))] -translate-x-1/2">
+        <div className="rounded-[28px] border border-white/14 bg-[rgba(255,255,255,0.10)] px-4 py-3 shadow-[0_30px_120px_rgba(0,0,0,0.55)] ring-1 ring-white/10">
+          <div className="flex items-end justify-between">
+            {dock.map((app) => (
+              <button
+                key={app.id}
+                type="button"
+                onClick={() => onOpenApp(app.id)}
+                className="flex flex-col items-center gap-1 rounded-2xl px-2 py-1 outline-none focus-visible:ring-2 focus-visible:ring-white/20 active:scale-[0.98]"
+                aria-label={`Open ${app.name}`}
+              >
+                {app.icon}
+              </button>
+            ))}
           </div>
         </div>
       </div>
