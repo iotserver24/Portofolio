@@ -7,6 +7,8 @@ import { Dock } from "@/components/os/dock/Dock";
 import { DesktopIcons } from "@/components/os/desktop/DesktopIcons";
 import { DesktopWindowManager } from "@/components/os/desktop/DesktopWindowManager";
 import { MenuBar } from "@/components/os/desktop/MenuBar";
+import { DesktopLoginScreen } from "@/components/os/lock/DesktopLoginScreen";
+import { MobileLockScreen } from "@/components/os/lock/MobileLockScreen";
 import { MobileHome } from "@/components/os/mobile/MobileHome";
 import { MobileAppView } from "@/components/os/mobile/MobileAppView";
 import { Wallpaper } from "@/components/os/wallpaper/Wallpaper";
@@ -22,14 +24,20 @@ function useIsMobileBreakpoint() {
 
   useEffect(() => {
     const mqCoarse = window.matchMedia("(pointer: coarse)");
-    const update = () =>
-      setIsMobile(window.innerWidth <= 820 || mqCoarse.matches);
+    const mqNoHover = window.matchMedia("(hover: none)");
+    const update = () => {
+      const touchy = navigator.maxTouchPoints > 0 || mqCoarse.matches || mqNoHover.matches;
+      const w = window.innerWidth;
+      setIsMobile(w <= 820 || (touchy && w <= 1024));
+    };
     update();
     window.addEventListener("resize", update);
     mqCoarse.addEventListener("change", update);
+    mqNoHover.addEventListener("change", update);
     return () => {
       window.removeEventListener("resize", update);
       mqCoarse.removeEventListener("change", update);
+      mqNoHover.removeEventListener("change", update);
     };
   }, []);
 
@@ -39,6 +47,7 @@ function useIsMobileBreakpoint() {
 export function OSShell() {
   const isMobile = useIsMobileBreakpoint();
   const [mobileState, setMobileState] = useState<MobileState>({ kind: "home" });
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const searchParams = useSearchParams();
   const requestedApp = searchParams.get("app");
 
@@ -64,7 +73,13 @@ export function OSShell() {
       <Wallpaper src={isMobile ? "/mb_bg.mp4" : "/bg.mp4"} />
 
       <div className="relative z-10 h-dvh w-full">
-        {isMobile ? (
+        {!isUnlocked ? (
+          isMobile ? (
+            <MobileLockScreen imageSrc="/mb_loc.png" onUnlock={() => setIsUnlocked(true)} />
+          ) : (
+            <DesktopLoginScreen imageSrc="/loc.png" onUnlock={() => setIsUnlocked(true)} />
+          )
+        ) : isMobile ? (
           <div className="h-full w-full">
             {mobileState.kind === "home" ? (
               <MobileHome
