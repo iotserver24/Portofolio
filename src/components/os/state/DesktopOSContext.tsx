@@ -274,3 +274,7 @@ export function useDesktopOS() {
   return ctx;
 }
 
+export function useDesktopOSOptional() {
+  return useContext(DesktopOSContext);
+}
+

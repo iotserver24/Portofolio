@@ -7,6 +7,7 @@ import { DonateApp } from "@/apps/DonateApp";
 import { ExperienceApp } from "@/apps/ExperienceApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
+import { TerminalApp } from "@/apps/TerminalApp";
 import { OSAppIcon } from "@/components/os/icons/OSAppIcon";
 
 export type AppId =
@@ -16,7 +17,8 @@ export type AppId =
   | "experience"
   | "about"
   | "contact"
-  | "donate";
+  | "donate"
+  | "terminal";
 
 export type OSApp = {
   id: AppId;
@@ -126,6 +128,20 @@ export const apps: OSApp[] = [
     ),
     render: () => <DonateApp />,
   },
+  {
+    id: "terminal",
+    name: "Terminal",
+    subtitle: "Command line",
+    accentClassName: "text-zinc-200",
+    icon: (
+      <OSAppIcon
+        src="/os-icons/brand-github.svg"
+        alt="Terminal"
+        tintClassName="opacity-90"
+      />
+    ),
+    render: () => <TerminalApp />,
+  },
 ];
 
 export const appsById = Object.fromEntries(apps.map((a) => [a.id, a])) as Record<
@@ -141,5 +157,6 @@ export const pinnedApps: AppId[] = [
   "about",
   "contact",
   "donate",
+  "terminal",
 ];
 
