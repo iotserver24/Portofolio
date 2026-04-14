@@ -135,7 +135,7 @@ export const apps: OSApp[] = [
     accentClassName: "text-zinc-200",
     icon: (
       <OSAppIcon
-        src="/os-icons/brand-github.svg"
+        src="/os-icons/terminal.svg"
         alt="Terminal"
         tintClassName="opacity-90"
       />

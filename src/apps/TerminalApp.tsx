@@ -17,14 +17,19 @@ type RunResult =
   | { kind: "async"; promise: Promise<TerminalLine[]>; cancel?: () => void };
 
 function extractOpenAppMarkers(text: string) {
-  const re = /^\s*\[\[OPEN_APP:([a-z-]+)\]\]\s*$/gim;
-  const ids: string[] = [];
+  const re = /\[\[OPEN_APP:([a-z-]+)\]\]/gi;
+  const ids = new Set<string>();
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
-    ids.push(m[1] ?? "");
+    const id = (m[1] ?? "").trim();
+    if (id) ids.add(id);
   }
-  const cleaned = text.replace(re, "").replace(/\n{3,}/g, "\n\n").trimEnd();
-  return { ids: ids.filter(Boolean), cleaned };
+  const cleaned = text
+    .replace(re, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trimEnd();
+  return { ids: Array.from(ids), cleaned };
 }
 
 function splitArgs(input: string): string[] {
