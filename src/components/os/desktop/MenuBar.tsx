@@ -7,14 +7,15 @@ function formatTime(d: Date) {
 }
 
 export function MenuBar() {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    setNow(new Date());
     const id = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(id);
   }, []);
 
-  const time = useMemo(() => formatTime(now), [now]);
+  const time = useMemo(() => (now ? formatTime(now) : "--:--"), [now]);
 
   return (
     <div className="pointer-events-auto absolute left-0 right-0 top-0 z-[60] h-[var(--os-menubar-h)]">
@@ -45,4 +46,3 @@ export function MenuBar() {
     </div>
   );
 }
-
