@@ -30,6 +30,16 @@ export function MobileLockScreen({
     return () => window.clearInterval(t);
   }, []);
 
+  const endDrag = (unlock: boolean) => {
+    startYRef.current = null;
+    setIsDragging(false);
+    if (unlock) {
+      onUnlock();
+      return;
+    }
+    setDragY(0);
+  };
+
   return (
     <div className="absolute inset-0 z-50 overflow-hidden bg-black text-white">
       <img
@@ -41,10 +51,11 @@ export function MobileLockScreen({
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/70" />
 
       <div
-        className="relative h-full w-full"
+        className="relative h-full w-full touch-none"
         style={{
           transform: `translateY(${entered ? -dragY : 0}px)`,
           transition: isDragging ? undefined : "transform 220ms cubic-bezier(0.2,0.9,0.2,1)",
+          touchAction: "none",
         }}
         ref={(node) => {
           if (!node) return;
@@ -52,6 +63,7 @@ export function MobileLockScreen({
           requestAnimationFrame(() => setEntered(true));
         }}
         onPointerDown={(e) => {
+          if (!e.isPrimary) return;
           startYRef.current = e.clientY;
           setDragY(0);
           setIsDragging(true);
@@ -61,18 +73,10 @@ export function MobileLockScreen({
           const startY = startYRef.current;
           if (startY == null) return;
           const dy = startY - e.clientY; // swipe up => positive
-          setDragY(Math.max(0, dy));
+          setDragY(Math.max(0, Math.min(320, dy)));
         }}
-        onPointerUp={() => {
-          const shouldUnlock = dragY > 140;
-          startYRef.current = null;
-          setIsDragging(false);
-          if (shouldUnlock) {
-            onUnlock();
-            return;
-          }
-          setDragY(0);
-        }}
+        onPointerUp={() => endDrag(dragY > 140)}
+        onPointerCancel={() => endDrag(false)}
       >
         <div className="px-6 pt-16">
           <div className="text-[58px] font-semibold tracking-tight leading-none">
