@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { AboutApp } from "@/apps/AboutApp";
 import { ActivityApp } from "@/apps/ActivityApp";
 import { ContactApp } from "@/apps/ContactApp";
+import { DonateApp } from "@/apps/DonateApp";
 import { ExperienceApp } from "@/apps/ExperienceApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
@@ -14,7 +15,8 @@ export type AppId =
   | "activity"
   | "experience"
   | "about"
-  | "contact";
+  | "contact"
+  | "donate";
 
 export type OSApp = {
   id: AppId;
@@ -61,7 +63,7 @@ export const apps: OSApp[] = [
     accentClassName: "text-violet-300",
     icon: (
       <OSAppIcon
-        src="/os-icons/heart.svg"
+        src="/os-icons/activity.svg"
         alt="Activity"
         tintClassName="opacity-90"
       />
@@ -75,7 +77,7 @@ export const apps: OSApp[] = [
     accentClassName: "text-fuchsia-300",
     icon: (
       <OSAppIcon
-        src="/os-icons/info-circle.svg"
+        src="/os-icons/briefcase.svg"
         alt="Experience"
         tintClassName="opacity-90"
       />
@@ -110,6 +112,20 @@ export const apps: OSApp[] = [
     ),
     render: () => <ContactApp />,
   },
+  {
+    id: "donate",
+    name: "Donate",
+    subtitle: "Support my work",
+    accentClassName: "text-emerald-300",
+    icon: (
+      <OSAppIcon
+        src="/os-icons/heart.svg"
+        alt="Donate"
+        tintClassName="opacity-90"
+      />
+    ),
+    render: () => <DonateApp />,
+  },
 ];
 
 export const appsById = Object.fromEntries(apps.map((a) => [a.id, a])) as Record<
@@ -124,5 +140,6 @@ export const pinnedApps: AppId[] = [
   "experience",
   "about",
   "contact",
+  "donate",
 ];
 

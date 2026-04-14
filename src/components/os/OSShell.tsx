@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { Dock } from "@/components/os/dock/Dock";
 import { DesktopIcons } from "@/components/os/desktop/DesktopIcons";
@@ -10,6 +11,7 @@ import { MobileHome } from "@/components/os/mobile/MobileHome";
 import { MobileAppView } from "@/components/os/mobile/MobileAppView";
 import { Wallpaper } from "@/components/os/wallpaper/Wallpaper";
 import { type AppId, appsById, pinnedApps } from "@/os/apps";
+import { useDesktopOS } from "@/components/os/state/DesktopOSContext";
 
 type MobileState =
   | { kind: "home" }
@@ -37,11 +39,25 @@ function useIsMobileBreakpoint() {
 export function OSShell() {
   const isMobile = useIsMobileBreakpoint();
   const [mobileState, setMobileState] = useState<MobileState>({ kind: "home" });
+  const searchParams = useSearchParams();
+  const requestedApp = searchParams.get("app");
+
+  const requestedAppId = useMemo(() => {
+    if (!requestedApp) return null;
+    const maybe = requestedApp as AppId;
+    return appsById[maybe] ? maybe : null;
+  }, [requestedApp]);
 
   const mobileApp = useMemo(() => {
     if (mobileState.kind !== "app") return null;
     return appsById[mobileState.appId];
   }, [mobileState]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    if (!requestedAppId) return;
+    setMobileState({ kind: "app", appId: requestedAppId });
+  }, [isMobile, requestedAppId]);
 
   return (
     <div className="os-root relative min-h-dvh w-full overflow-hidden bg-black text-white">
@@ -71,11 +87,22 @@ export function OSShell() {
           <DesktopWindowManager>
             <MenuBar />
             <DesktopIcons />
+            {requestedAppId ? <DesktopQueryOpener appId={requestedAppId} /> : null}
             <Dock />
           </DesktopWindowManager>
         )}
       </div>
     </div>
   );
+}
+
+function DesktopQueryOpener({ appId }: { appId: AppId }) {
+  const { openApp } = useDesktopOS();
+
+  useEffect(() => {
+    openApp(appId);
+  }, [appId, openApp]);
+
+  return null;
 }
 

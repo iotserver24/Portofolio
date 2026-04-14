@@ -9,7 +9,7 @@ export function DesktopIcons() {
   return (
     <div className="pointer-events-auto absolute left-1/2 top-[calc(var(--os-menubar-h)+28px)] w-[min(720px,calc(100vw-40px))] -translate-x-1/2">
       <div className="grid grid-cols-3 gap-7 sm:grid-cols-4 md:grid-cols-6">
-      {pinnedApps.slice(0, 6).map((id) => {
+      {pinnedApps.slice(0, 12).map((id) => {
         const app = appsById[id];
         if (!app) return null;
         return (
