@@ -157,7 +157,7 @@ export function MobileLockScreen({
           <div className="mt-2 text-[13px] text-white/70">Swipe up</div>
         </div>
 
-        <div className="absolute bottom-7 left-0 right-0 px-6">
+        <div className="absolute bottom-5 left-0 right-0 px-6">
           <div className="flex items-end justify-between">
             <button
               type="button"
@@ -166,13 +166,13 @@ export function MobileLockScreen({
                 void toggleTorch();
               }}
               disabled={isTorchBusy}
-              className="grid h-10 w-10 place-items-center rounded-2xl border border-white/12 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
+              className="grid h-16 w-16 place-items-center rounded-full border border-white/14 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
               aria-label={isTorchOn ? "Turn torch off" : "Turn torch on"}
             >
               <img
                 src={isTorchOn ? "/os-icons/torch-on.svg" : "/os-icons/torch.svg"}
                 alt=""
-                className={isTorchOn ? "h-5 w-5 opacity-100" : "h-5 w-5 opacity-90"}
+                className={isTorchOn ? "h-9 w-9 opacity-100" : "h-9 w-9 opacity-90"}
                 draggable={false}
               />
             </button>
@@ -183,13 +183,13 @@ export function MobileLockScreen({
                 e.stopPropagation();
                 openNativeCamera();
               }}
-              className="grid h-10 w-10 place-items-center rounded-2xl border border-white/12 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
+              className="grid h-16 w-16 place-items-center rounded-full border border-white/14 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
               aria-label="Open camera"
             >
               <img
                 src="/os-icons/camera.svg"
                 alt=""
-                className="h-5 w-5 opacity-90"
+                className="h-9 w-9 opacity-90"
                 draggable={false}
               />
             </button>
