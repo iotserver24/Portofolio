@@ -23,11 +23,10 @@ export function MobileLockScreen({
   const [isDragging, setIsDragging] = useState(false);
   const [entered, setEntered] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [isTorchBusy, setIsTorchBusy] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
 
   const hint = useMemo(() => "Swipe up to open", []);
 
@@ -65,10 +64,6 @@ export function MobileLockScreen({
         audio: false,
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch(() => {});
-      }
       return stream;
     } catch {
       setToast("Camera permission denied");
@@ -100,30 +95,11 @@ export function MobileLockScreen({
     }
   };
 
-  const openCamera = async () => {
-    setIsCameraOpen(true);
-    const stream = await ensureCamera();
-    if (!stream) setIsCameraOpen(false);
-  };
-
-  const closeCamera = () => {
-    setIsCameraOpen(false);
-    if (isTorchOn) {
-      void (async () => {
-        try {
-          const s = streamRef.current;
-          const track = s?.getVideoTracks?.()[0];
-          await track?.applyConstraints?.({ advanced: [{ torch: false }] } as any);
-        } catch {
-          // ignore
-        } finally {
-          setIsTorchOn(false);
-          stopStream();
-        }
-      })();
-      return;
-    }
-    stopStream();
+  const openNativeCamera = () => {
+    const el = cameraInputRef.current;
+    if (!el) return;
+    el.value = "";
+    el.click();
   };
 
   const endDrag = (unlock: boolean) => {
@@ -190,22 +166,32 @@ export function MobileLockScreen({
                 void toggleTorch();
               }}
               disabled={isTorchBusy}
-              className="rounded-2xl border border-white/12 bg-black/35 px-3 py-2 text-[12px] text-white/80 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
+              className="grid h-10 w-10 place-items-center rounded-2xl border border-white/12 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
               aria-label={isTorchOn ? "Turn torch off" : "Turn torch on"}
             >
-              {isTorchOn ? "Torch On" : "Torch"}
+              <img
+                src="/os-icons/torch.svg"
+                alt=""
+                className={isTorchOn ? "h-5 w-5 opacity-100" : "h-5 w-5 opacity-90"}
+                draggable={false}
+              />
             </button>
 
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                void openCamera();
+                openNativeCamera();
               }}
-              className="rounded-2xl border border-white/12 bg-black/35 px-3 py-2 text-[12px] text-white/80 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
+              className="grid h-10 w-10 place-items-center rounded-2xl border border-white/12 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
               aria-label="Open camera"
             >
-              Camera
+              <img
+                src="/os-icons/camera.svg"
+                alt=""
+                className="h-5 w-5 opacity-90"
+                draggable={false}
+              />
             </button>
           </div>
 
@@ -216,34 +202,21 @@ export function MobileLockScreen({
         </div>
       </div>
 
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={() => {
+          // We don't need the file; we just want the native camera UI.
+          setToast("Captured");
+        }}
+      />
+
       {toast ? (
         <div className="pointer-events-none absolute left-1/2 top-6 z-[60] -translate-x-1/2 rounded-2xl border border-white/10 bg-black/55 px-4 py-2 text-[12px] text-white/80 backdrop-blur">
           {toast}
-        </div>
-      ) : null}
-
-      {isCameraOpen ? (
-        <div className="absolute inset-0 z-[70] bg-black">
-          <video
-            ref={videoRef}
-            className="h-full w-full object-cover"
-            playsInline
-            muted
-          />
-          <div className="absolute left-0 right-0 top-0 flex items-center justify-between px-5 pt-6">
-            <div className="text-[13px] font-semibold text-white/85">Camera</div>
-            <button
-              type="button"
-              onClick={closeCamera}
-              className="rounded-2xl border border-white/12 bg-black/40 px-3 py-2 text-[12px] text-white/80 backdrop-blur"
-              aria-label="Close camera"
-            >
-              Close
-            </button>
-          </div>
-          <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center">
-            <div className="h-16 w-16 rounded-full border-2 border-white/75" />
-          </div>
         </div>
       ) : null}
     </div>
