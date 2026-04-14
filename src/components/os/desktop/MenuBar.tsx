@@ -28,6 +28,14 @@ export function MenuBar() {
         </div>
 
         <div className="flex items-center gap-3 text-[12px] text-white/75">
+          <a
+            href="https://github.com/iotserver24"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-md px-2 py-1 text-white/75 hover:bg-white/5 hover:text-white/90"
+          >
+            GitHub
+          </a>
           <span className="text-white/55">Wi‑Fi</span>
           <span className="text-white/55">Battery</span>
           <span className="font-medium text-white/85">{time}</span>
