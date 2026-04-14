@@ -110,9 +110,7 @@ export async function POST(req: Request) {
 
   const baseUrlRaw = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
   const baseUrl = baseUrlRaw.replace(/\/+$/, "");
-  const forceNonStreaming =
-    process.env.OPENAI_FORCE_NONSTREAM === "1" ||
-    baseUrl !== "https://api.openai.com/v1";
+  const forceNonStreaming = process.env.OPENAI_FORCE_NONSTREAM === "1";
 
   let body: Body;
   try {
@@ -128,9 +126,11 @@ export async function POST(req: Request) {
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
   const portfolioFacts = [
+    "Owner/alias: R43AP3R editz (also known as Anish Kumar).",
     "This is a personal portfolio site with a desktop-OS style interface.",
     "Routes include: /, /about, /projects, /experience, /activity, /contact, /donate.",
-    "The Terminal supports allowlisted commands (help/clear/open/about/projects/...).",
+    "Key projects include: Xibe AI, Xibe Chat, Xibe Chat CLI, PR Review Bot, Sub.MegaVault, Video-Gen, Pollin-Coder, AniSurge, and more.",
+    "The Terminal supports allowlisted commands: help, clear, whoami, stack, repo, open <appId>, about/projects/activity/experience/contact/donate, ai <question>.",
   ].join("\n");
 
   const system = [
@@ -138,6 +138,7 @@ export async function POST(req: Request) {
     "Be concise, helpful, and grounded in the portfolio context only.",
     "Never claim you executed real commands or accessed files or the network.",
     "If the user asks for anything unrelated to the portfolio, say so and redirect to relevant commands/pages.",
+    "You may request safe actions by emitting a single marker on its own line exactly like: [[OPEN_APP:appId]] where appId is one of overview, projects, activity, experience, about, contact, donate, terminal.",
     "",
     "Portfolio facts:",
     portfolioFacts,

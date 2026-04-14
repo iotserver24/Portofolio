@@ -16,6 +16,17 @@ type RunResult =
   | { kind: "sync"; lines: TerminalLine[] }
   | { kind: "async"; promise: Promise<TerminalLine[]>; cancel?: () => void };
 
+function extractOpenAppMarkers(text: string) {
+  const re = /^\s*\[\[OPEN_APP:([a-z-]+)\]\]\s*$/gim;
+  const ids: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    ids.push(m[1] ?? "");
+  }
+  const cleaned = text.replace(re, "").replace(/\n{3,}/g, "\n\n").trimEnd();
+  return { ids: ids.filter(Boolean), cleaned };
+}
+
 function splitArgs(input: string): string[] {
   return input.trim().split(/\s+/).filter(Boolean);
 }
@@ -46,6 +57,7 @@ export function TerminalApp() {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const streamTextRef = useRef("");
 
   const prompt = "guest@portofolio:~$";
 
@@ -62,6 +74,7 @@ export function TerminalApp() {
   const [history, setHistory] = useState<string[]>([]);
   const [, setHistoryIdx] = useState<number | null>(null);
   const [isBusy, setIsBusy] = useState(false);
+  const [workingDots, setWorkingDots] = useState(0);
 
   const focusInput = useCallback(() => {
     inputRef.current?.focus();
@@ -76,6 +89,12 @@ export function TerminalApp() {
     if (!el) return;
     el.scrollTop = el.scrollHeight;
   }, [lines.length]);
+
+  useEffect(() => {
+    if (!isBusy) return;
+    const t = window.setInterval(() => setWorkingDots((n) => (n + 1) % 4), 260);
+    return () => window.clearInterval(t);
+  }, [isBusy]);
 
   const cancelActive = useCallback(() => {
     abortRef.current?.abort();
@@ -209,6 +228,7 @@ export function TerminalApp() {
               const reader = res.body.getReader();
               const decoder = new TextDecoder();
               let buf = "";
+              streamTextRef.current = "";
 
               // Streamed output is rendered incrementally by updating the last line in-place.
               setLines((prev) => [...prev, { kind: "output", text: "" }]);
@@ -217,6 +237,7 @@ export function TerminalApp() {
                 const { done, value } = await reader.read();
                 if (done) break;
                 buf += decoder.decode(value, { stream: true });
+                streamTextRef.current = buf;
                 setLines((prev) => {
                   const next = [...prev];
                   const lastIdx = next.length - 1;
@@ -286,6 +307,31 @@ export function TerminalApp() {
       try {
         const extra = await result.promise;
         if (extra.length) setLines((prev) => [...prev, ...extra]);
+
+        // If the AI output requested actions, execute them safely.
+        const streamed = streamTextRef.current;
+        if (streamed) {
+          const { ids, cleaned } = extractOpenAppMarkers(streamed);
+          if (cleaned !== streamed) {
+            setLines((prev) => {
+              const next = [...prev];
+              const lastIdx = next.length - 1;
+              const last = next[lastIdx];
+              if (last && last.kind === "output") {
+                next[lastIdx] = { kind: "output", text: cleaned };
+              }
+              return next;
+            });
+          }
+          for (const id of ids) {
+            const res = openIfExists(id);
+            if (!res.ok) {
+              setLines((prev) => [...prev, { kind: "error", text: res.error }]);
+            } else {
+              setLines((prev) => [...prev, { kind: "output", text: `Opened ${id}` }]);
+            }
+          }
+        }
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         setLines((prev) => [...prev, { kind: "error", text: msg }]);
@@ -388,6 +434,11 @@ export function TerminalApp() {
 
       <div className="flex items-center gap-2 border-t border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px]">
         <span className="select-none text-zinc-300">{prompt}</span>
+        {isBusy ? (
+          <span className="select-none text-zinc-500">
+            AI working{".".repeat(workingDots)}
+          </span>
+        ) : null}
         <input
           ref={inputRef}
           value={value}
@@ -401,7 +452,7 @@ export function TerminalApp() {
             }
           }}
           className="min-w-0 flex-1 bg-transparent text-zinc-100 outline-none placeholder:text-zinc-500"
-          placeholder={isBusy ? "Working..." : "Type a command…"}
+          placeholder={isBusy ? "" : "Type a command…"}
           aria-label="Terminal input"
           autoCapitalize="none"
           autoCorrect="off"
