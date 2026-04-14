@@ -50,7 +50,3 @@ npm run start
 ```bash
 npm run lint
 ```
-
-## Notes
-
-- The desktop menu bar clock now initializes from client runtime and updates continuously using the user’s local timezone/locale.
