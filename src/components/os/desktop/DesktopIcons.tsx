@@ -1,0 +1,39 @@
+"use client";
+
+import { appsById, pinnedApps } from "@/os/apps";
+import { useDesktopOS } from "@/components/os/state/DesktopOSContext";
+
+export function DesktopIcons() {
+  const { openApp } = useDesktopOS();
+
+  return (
+    <div className="pointer-events-auto absolute left-8 top-8 grid max-w-[420px] grid-cols-3 gap-6">
+      {pinnedApps.slice(0, 6).map((id) => {
+        const app = appsById[id];
+        if (!app) return null;
+        return (
+          <button
+            key={app.id}
+            type="button"
+            onDoubleClick={() => openApp(app.id)}
+            onClick={() => {}}
+            className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+            aria-label={`Open ${app.name}`}
+          >
+            <div className="transition-transform duration-150 group-hover:-translate-y-0.5">
+              {app.icon}
+            </div>
+            <div className="text-center text-[11px] font-medium tracking-tight text-white/85">
+              {app.name}
+            </div>
+          </button>
+        );
+      })}
+      <div className="col-span-3 mt-2 rounded-2xl border border-white/12 bg-[rgba(10,10,12,0.62)] px-3 py-2 text-[11px] text-white/75 shadow-[0_18px_70px_rgba(0,0,0,0.55)]">
+        Tip: double-click an app icon to open. Use <span className="font-semibold">Esc</span> to
+        minimize, <span className="font-semibold">Ctrl/Cmd+W</span> to close.
+      </div>
+    </div>
+  );
+}
+
