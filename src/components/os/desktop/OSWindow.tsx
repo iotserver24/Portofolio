@@ -49,7 +49,14 @@ export function OSWindow({
 
   const style = useMemo(() => {
     if (maximized) {
-      return { left: 0, top: 0, width: "100%", height: "100%" } as const;
+      return {
+        left: 10,
+        right: 10,
+        top: "calc(var(--os-menubar-h) + 10px)",
+        bottom: "calc(var(--os-dock-h) + 10px)",
+        width: "auto",
+        height: "auto",
+      } as const;
     }
     return { left: rect.x, top: rect.y, width: rect.w, height: rect.h } as const;
   }, [maximized, rect]);
@@ -67,17 +74,20 @@ export function OSWindow({
         "absolute rounded-2xl border os-surface",
         focused ? "os-border-strong shadow-[var(--os-shadow)]" : "shadow-[var(--os-shadow-soft)]",
         // Avoid animating layout props (left/top/width/height) to keep motion smooth.
-        "overflow-hidden will-change-transform transition-[box-shadow,opacity,transform] duration-200 ease-out",
+        "overflow-hidden will-change-transform",
+        dragMode ? "" : "transition-[box-shadow,left,top,width,height,opacity,transform] duration-260 ease-[cubic-bezier(0.2,0.9,0.2,1)]",
       ].join(" ")}
       style={{
         ...style,
         zIndex,
         animation:
           phase === "closing"
-            ? "osWindowOut 170ms ease-in forwards"
+            ? "osWindowOut 240ms cubic-bezier(0.2,0.9,0.2,1) forwards"
             : phase === "minimizing"
-              ? "osWindowMinimize 170ms ease-in forwards"
-              : "osWindowIn 160ms ease-out",
+              ? "osWindowMinimize 240ms cubic-bezier(0.2,0.9,0.2,1) forwards"
+              : phase === "maximizing"
+                ? "osWindowMaximizePulse 260ms cubic-bezier(0.2,0.9,0.2,1)"
+                : "osWindowIn 220ms cubic-bezier(0.2,0.9,0.2,1)",
       }}
       onPointerDown={() => onFocus()}
       role="dialog"

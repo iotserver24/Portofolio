@@ -6,6 +6,7 @@ import { ContactApp } from "@/apps/ContactApp";
 import { ExperienceApp } from "@/apps/ExperienceApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
+import { OSAppIcon } from "@/components/os/icons/OSAppIcon";
 
 export type AppId =
   | "overview"
@@ -24,36 +25,19 @@ export type OSApp = {
   render: () => ReactNode;
 };
 
-function AppIcon({
-  label,
-  bgClassName,
-}: {
-  label: string;
-  bgClassName: string;
-}) {
-  return (
-    <div
-      className={[
-        "grid h-11 w-11 place-items-center rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.55)]",
-        "ring-1 ring-white/10",
-        bgClassName,
-      ].join(" ")}
-      aria-hidden
-    >
-      <span className="text-sm font-semibold tracking-tight text-white/95">
-        {label}
-      </span>
-    </div>
-  );
-}
-
 export const apps: OSApp[] = [
   {
     id: "overview",
     name: "Overview",
     subtitle: "Quick intro",
     accentClassName: "text-emerald-300",
-    icon: <AppIcon label="AK" bgClassName="bg-emerald-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/user.svg"
+        alt="Overview"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <OverviewApp />,
   },
   {
@@ -61,7 +45,13 @@ export const apps: OSApp[] = [
     name: "Projects",
     subtitle: "GitHub-centric",
     accentClassName: "text-sky-300",
-    icon: <AppIcon label="GH" bgClassName="bg-sky-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/brand-github.svg"
+        alt="Projects"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <ProjectsApp />,
   },
   {
@@ -69,7 +59,13 @@ export const apps: OSApp[] = [
     name: "Activity",
     subtitle: "Recent ship log",
     accentClassName: "text-violet-300",
-    icon: <AppIcon label="∿" bgClassName="bg-violet-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/heart.svg"
+        alt="Activity"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <ActivityApp />,
   },
   {
@@ -77,7 +73,13 @@ export const apps: OSApp[] = [
     name: "Experience",
     subtitle: "Timeline",
     accentClassName: "text-fuchsia-300",
-    icon: <AppIcon label="XP" bgClassName="bg-fuchsia-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/info-circle.svg"
+        alt="Experience"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <ExperienceApp />,
   },
   {
@@ -85,7 +87,13 @@ export const apps: OSApp[] = [
     name: "About",
     subtitle: "Bio + snapshot",
     accentClassName: "text-amber-300",
-    icon: <AppIcon label="ME" bgClassName="bg-amber-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/info-circle.svg"
+        alt="About"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <AboutApp />,
   },
   {
@@ -93,7 +101,13 @@ export const apps: OSApp[] = [
     name: "Contact",
     subtitle: "Send a message",
     accentClassName: "text-rose-300",
-    icon: <AppIcon label="@" bgClassName="bg-rose-500/35" />,
+    icon: (
+      <OSAppIcon
+        src="/os-icons/mail.svg"
+        alt="Contact"
+        tintClassName="opacity-90"
+      />
+    ),
     render: () => <ContactApp />,
   },
 ];

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Dock } from "@/components/os/dock/Dock";
 import { DesktopIcons } from "@/components/os/desktop/DesktopIcons";
 import { DesktopWindowManager } from "@/components/os/desktop/DesktopWindowManager";
+import { MenuBar } from "@/components/os/desktop/MenuBar";
 import { MobileHome } from "@/components/os/mobile/MobileHome";
 import { MobileAppView } from "@/components/os/mobile/MobileAppView";
 import { Wallpaper } from "@/components/os/wallpaper/Wallpaper";
@@ -39,7 +40,7 @@ export function OSShell() {
 
   return (
     <div className="os-root relative min-h-dvh w-full overflow-hidden bg-black text-white">
-      <Wallpaper src="/bg.mp4" />
+      <Wallpaper src={isMobile ? "/mb_bg.mp4" : "/bg.mp4"} />
 
       <div className="relative z-10 h-dvh w-full">
         {isMobile ? (
@@ -63,6 +64,7 @@ export function OSShell() {
           </div>
         ) : (
           <DesktopWindowManager>
+            <MenuBar />
             <DesktopIcons />
             <Dock />
           </DesktopWindowManager>

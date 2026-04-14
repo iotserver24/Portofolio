@@ -12,6 +12,9 @@
   --os-shadow: 0 30px 120px rgba(0, 0, 0, 0.7);
   --os-shadow-soft: 0 18px 70px rgba(0, 0, 0, 0.55);
   --os-radius: 16px;
+
+  --os-menubar-h: 38px;
+  --os-dock-h: 86px;
 }
 
 @theme inline {
@@ -98,6 +101,15 @@ body {
   to {
     opacity: 0;
     transform: translateY(24px) scale(0.92);
+  }
+}
+
+@keyframes osWindowMaximizePulse {
+  from {
+    transform: scale(0.985);
+  }
+  to {
+    transform: scale(1);
   }
 }
 

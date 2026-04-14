@@ -7,7 +7,8 @@ export function DesktopIcons() {
   const { openApp } = useDesktopOS();
 
   return (
-    <div className="pointer-events-auto absolute left-8 top-8 grid max-w-[420px] grid-cols-3 gap-6">
+    <div className="pointer-events-auto absolute left-1/2 top-[calc(var(--os-menubar-h)+28px)] w-[min(720px,calc(100vw-40px))] -translate-x-1/2">
+      <div className="grid grid-cols-3 gap-7 sm:grid-cols-4 md:grid-cols-6">
       {pinnedApps.slice(0, 6).map((id) => {
         const app = appsById[id];
         if (!app) return null;
@@ -17,7 +18,7 @@ export function DesktopIcons() {
             type="button"
             onDoubleClick={() => openApp(app.id)}
             onClick={() => {}}
-            className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/20"
+            className="group flex flex-col items-center gap-2 rounded-2xl px-2 py-2 outline-none focus-visible:ring-2 focus-visible:ring-white/20 active:scale-[0.99]"
             aria-label={`Open ${app.name}`}
           >
             <div className="transition-transform duration-150 group-hover:-translate-y-0.5">
@@ -29,6 +30,7 @@ export function DesktopIcons() {
           </button>
         );
       })}
+      </div>
       <div className="col-span-3 mt-2 rounded-2xl border border-white/12 bg-[rgba(10,10,12,0.62)] px-3 py-2 text-[11px] text-white/75 shadow-[0_18px_70px_rgba(0,0,0,0.55)]">
         Tip: double-click an app icon to open. Use <span className="font-semibold">Esc</span> to
         minimize, <span className="font-semibold">Ctrl/Cmd+W</span> to close.

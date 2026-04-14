@@ -26,7 +26,7 @@ export type WindowState = {
   rect: WindowRect;
   minimized: boolean;
   maximized: boolean;
-  phase: "open" | "minimizing" | "closing";
+  phase: "open" | "minimizing" | "closing" | "maximizing";
   z: number;
 };
 
@@ -192,11 +192,25 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
       return {
         windows: {
           ...prev.windows,
-          [appId]: { ...win, maximized: !win.maximized, minimized: false, phase: "open" },
+          [appId]: { ...win, maximized: !win.maximized, minimized: false, phase: "maximizing" },
         },
         focusedAppId: appId,
       };
     });
+    phaseTimersRef.current[String(appId)] = window.setTimeout(() => {
+      setState((prev) => {
+        const win = prev.windows[appId];
+        if (!win) return prev;
+        return {
+          ...prev,
+          windows: {
+            ...prev.windows,
+            [appId]: { ...win, phase: "open" },
+          },
+        };
+      });
+      clearPhaseTimer(appId);
+    }, 260);
   }, []);
 
   const setRect = useCallback((appId: AppId, rect: WindowRect) => {
