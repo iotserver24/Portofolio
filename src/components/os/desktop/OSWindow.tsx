@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from "react";
 
 import type { AppId } from "@/os/apps";
 import type { WindowRect } from "@/components/os/state/DesktopOSContext";
+import type { WindowState } from "@/components/os/state/DesktopOSContext";
 
 type Props = {
   appId: AppId;
@@ -12,6 +13,7 @@ type Props = {
   focused: boolean;
   rect: WindowRect;
   maximized: boolean;
+  phase: WindowState["phase"];
   zIndex: number;
   onClose: () => void;
   onFocus: () => void;
@@ -28,6 +30,7 @@ export function OSWindow({
   focused,
   rect,
   maximized,
+  phase,
   zIndex,
   onClose,
   onFocus,
@@ -63,9 +66,19 @@ export function OSWindow({
       className={[
         "absolute rounded-2xl border os-surface",
         focused ? "os-border-strong shadow-[var(--os-shadow)]" : "shadow-[var(--os-shadow-soft)]",
-        "overflow-hidden transition-shadow duration-150",
+        // Avoid animating layout props (left/top/width/height) to keep motion smooth.
+        "overflow-hidden will-change-transform transition-[box-shadow,opacity,transform] duration-200 ease-out",
       ].join(" ")}
-      style={{ ...style, zIndex, animation: "osWindowIn 160ms ease-out" }}
+      style={{
+        ...style,
+        zIndex,
+        animation:
+          phase === "closing"
+            ? "osWindowOut 170ms ease-in forwards"
+            : phase === "minimizing"
+              ? "osWindowMinimize 170ms ease-in forwards"
+              : "osWindowIn 160ms ease-out",
+      }}
       onPointerDown={() => onFocus()}
       role="dialog"
       aria-label={title}
@@ -112,7 +125,7 @@ export function OSWindow({
               e.stopPropagation();
               onClose();
             }}
-            className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/30"
+            className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/30 transition-transform active:scale-95"
             aria-label="Close"
           />
           <button
@@ -122,7 +135,7 @@ export function OSWindow({
               e.stopPropagation();
               onMinimize();
             }}
-            className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/30"
+            className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/30 transition-transform active:scale-95"
             aria-label="Minimize"
           />
           <button
@@ -132,7 +145,7 @@ export function OSWindow({
               e.stopPropagation();
               onToggleMaximize();
             }}
-            className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/30"
+            className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/30 transition-transform active:scale-95"
             aria-label={maximized ? "Restore" : "Maximize"}
           />
         </div>

@@ -79,6 +79,28 @@ body {
   }
 }
 
+@keyframes osWindowOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@keyframes osWindowMinimize {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+}
+
 @keyframes osDockBounce {
   0% {
     transform: translateY(0) scale(1);

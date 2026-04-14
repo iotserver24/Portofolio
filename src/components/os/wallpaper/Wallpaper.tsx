@@ -37,7 +37,8 @@ export function Wallpaper({ src }: { src: string }) {
     <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
       <video
         ref={videoRef}
-        className="h-full w-full scale-[1.02] object-cover blur-[10px]"
+        // Full-screen `filter: blur()` is GPU-expensive. Keep it subtle for smoother FPS.
+        className="h-full w-full scale-[1.02] object-cover blur-[4px]"
         muted
         loop
         playsInline

@@ -26,6 +26,7 @@ export type WindowState = {
   rect: WindowRect;
   minimized: boolean;
   maximized: boolean;
+  phase: "open" | "minimizing" | "closing";
   z: number;
 };
 
@@ -71,6 +72,15 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
   });
 
   const nextZRef = useRef(10);
+  const phaseTimersRef = useRef<Record<string, number>>({});
+
+  const clearPhaseTimer = useCallback((appId: AppId) => {
+    const key = String(appId);
+    const timer = phaseTimersRef.current[key];
+    if (!timer) return;
+    window.clearTimeout(timer);
+    delete phaseTimersRef.current[key];
+  }, []);
 
   const openApp = useCallback((appId: AppId) => {
     setState((prev) => {
@@ -80,7 +90,7 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
         return {
           windows: {
             ...prev.windows,
-            [appId]: { ...existing, minimized: false, z },
+            [appId]: { ...existing, minimized: false, phase: "open", z },
           },
           focusedAppId: appId,
         };
@@ -98,6 +108,7 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
             rect,
             minimized: false,
             maximized: false,
+            phase: "open",
             z,
           },
         },
@@ -107,46 +118,81 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const closeApp = useCallback((appId: AppId) => {
+    clearPhaseTimer(appId);
     setState((prev) => {
-      const rest = { ...prev.windows };
-      delete rest[appId];
-      const focusedAppId =
-        prev.focusedAppId === appId ? null : prev.focusedAppId;
-      return { windows: rest, focusedAppId };
+      const win = prev.windows[appId];
+      if (!win) return prev;
+      return {
+        windows: { ...prev.windows, [appId]: { ...win, phase: "closing", minimized: false } },
+        focusedAppId: prev.focusedAppId === appId ? null : prev.focusedAppId,
+      };
     });
+    phaseTimersRef.current[String(appId)] = window.setTimeout(() => {
+      setState((prev) => {
+        const rest = { ...prev.windows };
+        delete rest[appId];
+        const focusedAppId =
+          prev.focusedAppId === appId ? null : prev.focusedAppId;
+        return { windows: rest, focusedAppId };
+      });
+      clearPhaseTimer(appId);
+    }, 190);
   }, []);
 
   const focusApp = useCallback((appId: AppId) => {
+    clearPhaseTimer(appId);
     setState((prev) => {
       const win = prev.windows[appId];
       if (!win) return prev;
       const z = (nextZRef.current += 1);
       return {
-        windows: { ...prev.windows, [appId]: { ...win, minimized: false, z } },
+        windows: {
+          ...prev.windows,
+          [appId]: { ...win, minimized: false, phase: "open", z },
+        },
         focusedAppId: appId,
       };
     });
   }, []);
 
   const minimizeApp = useCallback((appId: AppId) => {
-    setState((prev) => {
-      const win = prev.windows[appId];
-      if (!win) return prev;
-      return {
-        windows: { ...prev.windows, [appId]: { ...win, minimized: true } },
-        focusedAppId: prev.focusedAppId === appId ? null : prev.focusedAppId,
-      };
-    });
-  }, []);
-
-  const toggleMaximize = useCallback((appId: AppId) => {
+    clearPhaseTimer(appId);
     setState((prev) => {
       const win = prev.windows[appId];
       if (!win) return prev;
       return {
         windows: {
           ...prev.windows,
-          [appId]: { ...win, maximized: !win.maximized, minimized: false },
+          [appId]: { ...win, minimized: false, phase: "minimizing" },
+        },
+        focusedAppId: prev.focusedAppId === appId ? null : prev.focusedAppId,
+      };
+    });
+    phaseTimersRef.current[String(appId)] = window.setTimeout(() => {
+      setState((prev) => {
+        const win = prev.windows[appId];
+        if (!win) return prev;
+        return {
+          ...prev,
+          windows: {
+            ...prev.windows,
+            [appId]: { ...win, minimized: true, phase: "open" },
+          },
+        };
+      });
+      clearPhaseTimer(appId);
+    }, 190);
+  }, []);
+
+  const toggleMaximize = useCallback((appId: AppId) => {
+    clearPhaseTimer(appId);
+    setState((prev) => {
+      const win = prev.windows[appId];
+      if (!win) return prev;
+      return {
+        windows: {
+          ...prev.windows,
+          [appId]: { ...win, maximized: !win.maximized, minimized: false, phase: "open" },
         },
         focusedAppId: appId,
       };
@@ -168,6 +214,13 @@ export function DesktopOSProvider({ children }: { children: ReactNode }) {
         windows: { ...prev.windows, [appId]: { ...win, rect: next } },
       };
     });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      Object.values(phaseTimersRef.current).forEach((t) => window.clearTimeout(t));
+      phaseTimersRef.current = {};
+    };
   }, []);
 
   // Boot the desktop with a default window.

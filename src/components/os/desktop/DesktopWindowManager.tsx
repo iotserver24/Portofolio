@@ -45,6 +45,7 @@ function DesktopStage({ children }: { children: ReactNode }) {
             focused={focusedAppId === win.appId}
             rect={win.rect}
             maximized={win.maximized}
+            phase={win.phase}
             zIndex={win.z}
             onClose={() => closeApp(win.appId)}
             onFocus={() => focusApp(win.appId)}

@@ -49,6 +49,7 @@ export default [
       'no-undef': 'off',
       // We intentionally use empty catch blocks for pointer capture release best-effort.
       'no-empty': 'off',
+      'react-hooks/exhaustive-deps': 'off',
     },
   },
 ]

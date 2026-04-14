@@ -9,7 +9,20 @@ lerna-debug.log*
 
 node_modules
 *.local
-#dist/
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist/
+
+# Cursor / editor state
+.cursor/
+
+# OS cruft
+.DS_Store
+Thumbs.db
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
