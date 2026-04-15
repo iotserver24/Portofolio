@@ -19,14 +19,13 @@ export type MusicTrack = {
 // You can also add a `url` (Spotify/YouTube/SoundCloud/etc) as a source link.
 export const musicTracks: MusicTrack[] = [
   {
-    title: "m1",
-    artist: "Local",
+    title: "Let the World Burn",
     posterUrl: "/m1.jpeg",
     audioUrl: "/m1.mp4",
   },
   {
-    title: "m2",
-    artist: "Local",
+    title: "Machine Touch",
+    artist: "Aurora",
     posterUrl: "/m2.png",
     audioUrl: "/m2.mp4",
   },
