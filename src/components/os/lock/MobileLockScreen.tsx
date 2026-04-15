@@ -2,6 +2,80 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+/** Inline SVGs so icons always render (no broken /os-icons loads) and use currentColor for dark UI. */
+function IconTorchOff({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M9 2h6l1 3v6l-2 2v5a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-5l-2-2V5l1-3z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M8 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M10 13h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconTorchOn({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M9 2h6l1 3v6l-2 2v5a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-5l-2-2V5l1-3z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M8 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M10 13h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M7 12l-2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M17 12l2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconCamera({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M5 7h3l2-2h4l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 17a3 3 0 1 0 0-6a3 3 0 0 0 0 6z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function pad2(n: number) {
   return String(n).padStart(2, "0");
 }
@@ -157,41 +231,37 @@ export function MobileLockScreen({
           <div className="mt-2 text-[13px] text-white/70">Swipe up</div>
         </div>
 
-        <div className="absolute bottom-5 left-0 right-0 px-6">
+        <div className="pointer-events-auto absolute bottom-5 left-0 right-0 z-10 px-6 touch-manipulation">
           <div className="flex items-end justify-between">
             <button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
                 void toggleTorch();
               }}
               disabled={isTorchBusy}
-              className="grid h-16 w-16 place-items-center rounded-full border border-white/14 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
+              className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-white/14 bg-black/35 text-white shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur disabled:opacity-50"
               aria-label={isTorchOn ? "Turn torch off" : "Turn torch on"}
             >
-              <img
-                src={isTorchOn ? "/os-icons/torch-on.svg" : "/os-icons/torch.svg"}
-                alt=""
-                className={isTorchOn ? "h-9 w-9 opacity-100" : "h-9 w-9 opacity-90"}
-                draggable={false}
-              />
+              {isTorchOn ? (
+                <IconTorchOn className="h-9 w-9 opacity-100" />
+              ) : (
+                <IconTorchOff className="h-9 w-9 opacity-90" />
+              )}
             </button>
 
             <button
               type="button"
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
                 openNativeCamera();
               }}
-              className="grid h-16 w-16 place-items-center rounded-full border border-white/14 bg-black/35 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
+              className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-white/14 bg-black/35 text-white shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
               aria-label="Open camera"
             >
-              <img
-                src="/os-icons/camera.svg"
-                alt=""
-                className="h-9 w-9 opacity-90"
-                draggable={false}
-              />
+              <IconCamera className="h-9 w-9 opacity-90" />
             </button>
           </div>
 
