@@ -5,6 +5,7 @@ import { ActivityApp } from "@/apps/ActivityApp";
 import { ContactApp } from "@/apps/ContactApp";
 import { DonateApp } from "@/apps/DonateApp";
 import { ExperienceApp } from "@/apps/ExperienceApp";
+import { MusicApp } from "@/apps/MusicApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
 import { TerminalApp } from "@/apps/TerminalApp";
@@ -15,10 +16,16 @@ export type AppId =
   | "projects"
   | "activity"
   | "experience"
+  | "music"
   | "about"
   | "contact"
   | "donate"
   | "terminal";
+
+export type OSAppRenderContext = {
+  kind: "desktop" | "mobile";
+  onClose?: () => void;
+};
 
 export type OSApp = {
   id: AppId;
@@ -26,7 +33,8 @@ export type OSApp = {
   subtitle?: string;
   accentClassName: string;
   icon: ReactNode;
-  render: () => ReactNode;
+  render: (ctx?: OSAppRenderContext) => ReactNode;
+  mobilePresentation?: "card" | "fullscreen";
 };
 
 export const apps: OSApp[] = [
@@ -85,6 +93,21 @@ export const apps: OSApp[] = [
       />
     ),
     render: () => <ExperienceApp />,
+  },
+  {
+    id: "music",
+    name: "Music",
+    subtitle: "My playlist",
+    accentClassName: "text-cyan-300",
+    icon: (
+      <OSAppIcon
+        src="/os-icons/music.svg"
+        alt="Music"
+        tintClassName="opacity-90"
+      />
+    ),
+    render: () => <MusicApp />,
+    mobilePresentation: "fullscreen",
   },
   {
     id: "about",
@@ -154,6 +177,7 @@ export const pinnedApps: AppId[] = [
   "projects",
   "activity",
   "experience",
+  "music",
   "about",
   "contact",
   "donate",

@@ -53,7 +53,7 @@ function DesktopStage({ children }: { children: ReactNode }) {
             onToggleMaximize={() => toggleMaximize(win.appId)}
             onRectChange={(rect) => setRect(win.appId, rect)}
           >
-            <div className="p-4">{app.render()}</div>
+            <div className="p-4">{app.render({ kind: "desktop" })}</div>
           </OSWindow>
         );
       })}
