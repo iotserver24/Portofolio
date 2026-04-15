@@ -1,7 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import type { AppId, OSApp } from "@/os/apps";
 import { appsById } from "@/os/apps";
+
+function pad2(n: number) {
+  return String(n).padStart(2, "0");
+}
+
+/** Status bar style: 12h clock like 9:41 */
+function formatStatusTime(d: Date) {
+  const h12 = d.getHours() % 12 || 12;
+  return `${h12}:${pad2(d.getMinutes())}`;
+}
 
 export function MobileHome({
   apps,
@@ -10,19 +22,23 @@ export function MobileHome({
   apps: AppId[];
   onOpenApp: (appId: AppId) => void;
 }) {
+  const [now, setNow] = useState(() => new Date());
   const resolved: OSApp[] = apps.map((id) => appsById[id]).filter(Boolean);
   const dock = resolved.slice(0, 4);
   const grid = resolved.slice(0, 12);
 
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div className="pointer-events-auto relative h-full w-full px-5 pb-8 pt-3">
-      {/* iOS-ish status bar */}
-      <div className="flex items-center justify-between px-1 pt-2 text-[12px] font-medium text-white/85">
-        <div className="tracking-tight">9:41</div>
-        <div className="flex items-center gap-2 text-white/70">
-          <span>Wi‑Fi</span>
-          <span>▮▮▮</span>
-        </div>
+      {/* Status bar — time only */}
+      <div className="flex items-center px-1 pt-2 text-[12px] font-medium text-white/85">
+        <div className="tracking-tight tabular-nums">{formatStatusTime(now)}</div>
       </div>
 
       {/* Home grid */}
@@ -42,13 +58,6 @@ export function MobileHome({
               </div>
             </button>
           ))}
-        </div>
-
-        {/* Page dots */}
-        <div className="mt-6 flex items-center justify-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
         </div>
       </div>
 

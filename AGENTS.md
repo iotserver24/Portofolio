@@ -5,3 +5,5 @@
 
 ## Learned Workspace Facts
 - This workspace is a Next.js (App Router) portfolio project that builds on Vercel and uses TypeScript checks during `next build`.
+- The desktop-style OS shell includes a Terminal app; AI answers use `/api/terminal-ai`, which requires `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`) in server/Vercel environment.
+- For dark OS UI (e.g. mobile lock screen controls), prefer inline SVG icons using `currentColor` over `<img>` links to `/public` SVGs so strokes stay visible on dark backgrounds.
