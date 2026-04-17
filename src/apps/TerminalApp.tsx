@@ -44,8 +44,8 @@ function formatHelp(): string {
     "  whoami               About me (short)",
     "  stack                Tech stack",
     "  repo                 Repository link",
-    "  open <appId>          Open an OS app (overview/projects/activity/experience/about/contact/donate/terminal)",
-    "  about|projects|activity|experience|contact|donate",
+    "  open <appId>          Open an OS app (overview/projects/activity/experience/resume/about/contact/donate/terminal)",
+    "  about|projects|activity|experience|resume|contact|donate",
     "                       Open a specific app",
     "  ai <question>         Ask the portfolio AI (streams)",
     "",
@@ -190,6 +190,7 @@ export function TerminalApp() {
         case "projects":
         case "activity":
         case "experience":
+        case "resume":
         case "contact":
         case "donate": {
           const res = openIfExists(cmd);

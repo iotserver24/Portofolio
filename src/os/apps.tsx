@@ -8,6 +8,7 @@ import { ExperienceApp } from "@/apps/ExperienceApp";
 import { MusicApp } from "@/apps/MusicApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
+import { ResumeApp } from "@/apps/ResumeApp";
 import { TerminalApp } from "@/apps/TerminalApp";
 import { OSAppIcon } from "@/components/os/icons/OSAppIcon";
 
@@ -16,6 +17,7 @@ export type AppId =
   | "projects"
   | "activity"
   | "experience"
+  | "resume"
   | "music"
   | "about"
   | "contact"
@@ -93,6 +95,20 @@ export const apps: OSApp[] = [
       />
     ),
     render: () => <ExperienceApp />,
+  },
+  {
+    id: "resume",
+    name: "Resume",
+    subtitle: "PDF",
+    accentClassName: "text-sky-200",
+    icon: (
+      <OSAppIcon
+        src="/os-icons/info-circle.svg"
+        alt="Resume"
+        tintClassName="opacity-90"
+      />
+    ),
+    render: () => <ResumeApp />,
   },
   {
     id: "music",
@@ -177,6 +193,7 @@ export const pinnedApps: AppId[] = [
   "projects",
   "activity",
   "experience",
+  "resume",
   "music",
   "about",
   "contact",

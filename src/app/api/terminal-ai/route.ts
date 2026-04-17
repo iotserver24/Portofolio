@@ -128,9 +128,9 @@ export async function POST(req: Request) {
   const portfolioFacts = [
     "Owner/alias: R43AP3R editz (also known as Anish Kumar).",
     "This is a personal portfolio site with a desktop-OS style interface.",
-    "Routes include: /, /about, /projects, /experience, /activity, /contact, /donate.",
+    "Routes include: /, /about, /projects, /experience, /resume, /activity, /contact, /donate.",
     "Key projects include: Xibe AI, Xibe Chat, Xibe Chat CLI, PR Review Bot, Sub.MegaVault, Video-Gen, Pollin-Coder, AniSurge, and more.",
-    "The Terminal supports allowlisted commands: help, clear, whoami, stack, repo, open <appId>, about/projects/activity/experience/contact/donate, ai <question>.",
+    "The Terminal supports allowlisted commands: help, clear, whoami, stack, repo, open <appId>, about/projects/activity/experience/resume/contact/donate, ai <question>.",
   ].join("\n");
 
   const system = [
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
     "Be concise, helpful, and grounded in the portfolio context only.",
     "Never claim you executed real commands or accessed files or the network.",
     "If the user asks for anything unrelated to the portfolio, say so and redirect to relevant commands/pages.",
-    "You may request safe actions by emitting a single marker on its own line exactly like: [[OPEN_APP:appId]] where appId is one of overview, projects, activity, experience, about, contact, donate, terminal.",
+    "You may request safe actions by emitting a single marker on its own line exactly like: [[OPEN_APP:appId]] where appId is one of overview, projects, activity, experience, resume, about, contact, donate, terminal.",
     "",
     "Portfolio facts:",
     portfolioFacts,
