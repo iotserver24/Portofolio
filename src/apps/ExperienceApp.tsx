@@ -1,6 +1,6 @@
 const timeline = [
   {
-    period: "2023 — Present",
+    period: "2024 — Present",
     title: "BTech in Advanced Communication Technology",
     org: "NMAM Institute of Technology",
     summary:
