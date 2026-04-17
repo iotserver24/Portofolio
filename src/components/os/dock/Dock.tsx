@@ -27,7 +27,7 @@ export function Dock() {
       aria-label="Dock"
       className="pointer-events-auto absolute bottom-5 left-1/2 z-50 -translate-x-1/2"
     >
-      <div className="flex items-end gap-2 rounded-3xl border border-white/12 bg-[rgba(10,10,12,0.62)] px-3 py-2 shadow-[0_18px_70px_rgba(0,0,0,0.55)]">
+      <div className="flex items-end gap-2 rounded-3xl border border-white/12 bg-white/[0.02] px-3 py-2 shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur-[34px]">
         {items.map(({ app, running }, index) => {
           const dist =
             hoveredIndex == null ? 999 : Math.abs(index - hoveredIndex);

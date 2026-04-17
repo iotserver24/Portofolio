@@ -97,6 +97,7 @@ export function OSWindow({
         className={[
           "flex items-center justify-between gap-3 border-b border-white/10 px-3 py-2",
           "select-none",
+          "bg-white/[0.035] backdrop-blur-[56px]",
         ].join(" ")}
         onPointerDown={(e) => {
           if (maximized) return;

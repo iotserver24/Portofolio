@@ -19,7 +19,8 @@ export function MenuBar() {
 
   return (
     <div className="pointer-events-auto absolute left-0 right-0 top-0 z-[60] h-[var(--os-menubar-h)]">
-      <div className="mx-auto flex h-full w-full items-center justify-between px-4">
+      <div className="absolute inset-0 border-b border-white/10 bg-white/[0.04] backdrop-blur-[56px]" />
+      <div className="relative mx-auto flex h-full w-full items-center justify-between px-4">
         <div className="flex items-center gap-3 text-[12px] font-medium tracking-tight text-white/85">
           <span className="rounded-md px-2 py-1 hover:bg-white/5">Portfolio</span>
           <span className="text-white/45">File</span>
@@ -42,7 +43,6 @@ export function MenuBar() {
           <span className="font-medium text-white/85">{time}</span>
         </div>
       </div>
-      <div className="h-px w-full bg-white/10" />
     </div>
   );
 }
