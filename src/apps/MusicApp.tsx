@@ -273,10 +273,10 @@ export function MusicApp(props: MusicAppProps = {}) {
   };
 
   return (
-    <div className="font-mono text-[13px] text-white">
+    <div className="h-full font-mono text-[13px] text-white">
       {/* Mobile player UI (matches your screenshot vibe) */}
-      <div className="sm:hidden">
-        <div className="relative h-full w-full overflow-hidden">
+      <div className="h-full sm:hidden">
+        <div className="relative h-dvh w-full overflow-hidden">
           {selected?.posterUrl ? (
             <div aria-hidden className="absolute inset-0">
               <div
@@ -295,7 +295,7 @@ export function MusicApp(props: MusicAppProps = {}) {
             <div aria-hidden className="absolute inset-0 bg-white/5" />
           )}
 
-          <div className="relative flex min-h-[560px] flex-col px-5 pb-5 pt-4">
+          <div className="relative flex h-full flex-col px-5 pt-4 pb-[calc(env(safe-area-inset-bottom)+1.25rem)]">
             {/* Top row */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -324,57 +324,59 @@ export function MusicApp(props: MusicAppProps = {}) {
               </button>
             </div>
 
-            {/* Cover */}
-            <div className="mt-5 grid place-items-center">
-              <div className="h-[min(62vw,320px)] w-[min(62vw,320px)] overflow-hidden rounded-[28px] border border-white/12 bg-white/5 shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
-                {selected?.posterUrl ? (
-                  <img
-                    src={selected.posterUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    draggable={false}
-                  />
-                ) : null}
+            {/* Centered hero */}
+            <div className="flex flex-1 min-h-0 flex-col items-center justify-center">
+              {/* Cover */}
+              <div className="grid place-items-center">
+                <div className="h-[min(56vw,300px)] w-[min(56vw,300px)] overflow-hidden rounded-[28px] border border-white/12 bg-white/5 shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
+                  {selected?.posterUrl ? (
+                    <img
+                      src={selected.posterUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      draggable={false}
+                    />
+                  ) : null}
+                </div>
               </div>
-            </div>
 
-            {/* Title / artist */}
-            <div className="mt-5">
-              <div className="truncate text-[18px] font-semibold tracking-tight text-white/92">
-                {selected?.title ?? "No tracks yet"}
+              {/* Title / artist */}
+              <div className="mt-5 w-full text-center">
+                <div className="mx-auto max-w-[22ch] truncate text-[18px] font-semibold tracking-tight text-white/92">
+                  {selected?.title ?? "No tracks yet"}
+                </div>
+                <div className="mx-auto mt-1 max-w-[26ch] truncate text-[13px] text-white/65">
+                  {selected?.artist ?? "Add tracks in src/apps/music/tracks.ts"}
+                </div>
               </div>
-              <div className="mt-1 truncate text-[13px] text-white/65">
-                {selected?.artist ?? "Add tracks in src/apps/music/tracks.ts"}
-              </div>
-            </div>
 
-            {/* Progress */}
-            <div className="mt-4">
-              <input
-                type="range"
-                min={0}
-                max={Math.max(1, duration)}
-                value={Math.min(duration || 0, currentTime)}
-                onChange={(e) => {
-                  const el = audioRef.current;
-                  if (!el) return;
-                  const next = Number(e.target.value);
-                  el.currentTime = next;
-                  setCurrentTime(next);
-                }}
-                className="h-1.5 w-full accent-white/85"
-                aria-label="Seek"
-                disabled={!selectedAudioUrl}
-              />
-              <div className="mt-2 flex items-center justify-between text-[11px] tabular-nums text-white/55">
-                <div>{formatTime(currentTime)}</div>
-                <div>-{formatTime(Math.max(0, duration - currentTime))}</div>
+              {/* Progress */}
+              <div className="mt-5 w-full">
+                <input
+                  type="range"
+                  min={0}
+                  max={Math.max(1, duration)}
+                  value={Math.min(duration || 0, currentTime)}
+                  onChange={(e) => {
+                    const el = audioRef.current;
+                    if (!el) return;
+                    const next = Number(e.target.value);
+                    el.currentTime = next;
+                    setCurrentTime(next);
+                  }}
+                  className="h-1.5 w-full accent-white/85"
+                  aria-label="Seek"
+                  disabled={!selectedAudioUrl}
+                />
+                <div className="mt-2 flex items-center justify-between text-[11px] tabular-nums text-white/55">
+                  <div>{formatTime(currentTime)}</div>
+                  <div>-{formatTime(Math.max(0, duration - currentTime))}</div>
+                </div>
               </div>
-            </div>
 
-            {/* Controls */}
-            <div className="mt-auto pt-4">
-              <div className="flex items-center justify-between px-1">
+              {/* Controls */}
+              <div className="mt-6 w-full">
+                <div className="flex items-center justify-between px-1">
                 <button
                   type="button"
                   onClick={() => setShuffle((s) => !s)}
@@ -431,8 +433,9 @@ export function MusicApp(props: MusicAppProps = {}) {
                   <IconRepeat className="h-6 w-6" />
                 </button>
               </div>
+              </div>
 
-              <div className="mt-4 flex items-center justify-between text-[11px] text-white/60">
+              <div className="mt-5 flex w-full items-center justify-between text-[11px] text-white/60">
                 <button
                   type="button"
                   onClick={() => setShowQueue(true)}
@@ -448,7 +451,7 @@ export function MusicApp(props: MusicAppProps = {}) {
               </div>
 
               {!selectedAudioUrl ? (
-                <p className="mt-3 text-[11px] text-white/55">
+                <p className="mt-3 w-full text-[11px] text-white/55">
                   Add a direct audio link as <span className="text-white/80">audioUrl</span> to play in-app.
                 </p>
               ) : null}

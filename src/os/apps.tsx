@@ -106,7 +106,7 @@ export const apps: OSApp[] = [
         tintClassName="opacity-90"
       />
     ),
-    render: () => <MusicApp />,
+    render: (ctx) => <MusicApp {...ctx} />,
     mobilePresentation: "fullscreen",
   },
   {
