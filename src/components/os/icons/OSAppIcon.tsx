@@ -1,13 +1,17 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 export function OSAppIcon({
   src,
   alt,
   tintClassName,
+  children,
 }: {
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
   tintClassName?: string;
+  children?: ReactNode;
 }) {
   return (
     <div
@@ -21,13 +25,20 @@ export function OSAppIcon({
       ].join(" ")}
       aria-hidden
     >
-      <img
-        src={src}
-        alt={alt}
-        className={["h-7 w-7", "invert brightness-0 saturate-0", tintClassName ?? ""].join(" ")}
-        draggable={false}
-      />
+      {children ? (
+        <div className={["h-7 w-7 text-white", tintClassName ?? ""].join(" ")}>
+          {children}
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          className={["h-7 w-7", "invert brightness-0 saturate-0", tintClassName ?? ""].join(" ")}
+          draggable={false}
+        />
+      )}
     </div>
   );
 }
+
 

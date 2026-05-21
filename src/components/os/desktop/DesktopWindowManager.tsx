@@ -62,10 +62,6 @@ function DesktopStage({ children }: { children: ReactNode }) {
 }
 
 export function DesktopWindowManager({ children }: { children: ReactNode }) {
-  return (
-    <DesktopOSProvider>
-      <DesktopStage>{children}</DesktopStage>
-    </DesktopOSProvider>
-  );
+  return <DesktopStage>{children}</DesktopStage>;
 }
 
