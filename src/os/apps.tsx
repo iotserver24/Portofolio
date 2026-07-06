@@ -8,7 +8,7 @@ import { ExperienceApp } from "@/apps/ExperienceApp";
 import { MusicApp } from "@/apps/MusicApp";
 import { OverviewApp } from "@/apps/OverviewApp";
 import { ProjectsApp } from "@/apps/ProjectsApp";
-import { ResumeApp } from "@/apps/ResumeApp";
+
 import { TerminalApp } from "@/apps/TerminalApp";
 import { SettingsApp } from "@/apps/SettingsApp";
 import { ReadmeApp } from "@/apps/ReadmeApp";
@@ -19,7 +19,6 @@ export type AppId =
   | "projects"
   | "activity"
   | "experience"
-  | "resume"
   | "music"
   | "about"
   | "contact"
@@ -100,20 +99,7 @@ export const apps: OSApp[] = [
     ),
     render: () => <ExperienceApp />,
   },
-  {
-    id: "resume",
-    name: "Resume",
-    subtitle: "PDF",
-    accentClassName: "text-sky-200",
-    icon: (
-      <OSAppIcon
-        src="/os-icons/info-circle.svg"
-        alt="Resume"
-        tintClassName="opacity-90"
-      />
-    ),
-    render: () => <ResumeApp />,
-  },
+
   {
     id: "music",
     name: "Music",
@@ -192,7 +178,15 @@ export const apps: OSApp[] = [
     accentClassName: "text-zinc-400",
     icon: (
       <OSAppIcon>
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-full w-full">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-full w-full"
+        >
           <circle cx="12" cy="12" r="3" />
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </svg>
@@ -207,7 +201,15 @@ export const apps: OSApp[] = [
     accentClassName: "text-emerald-400",
     icon: (
       <OSAppIcon>
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-full w-full">
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-full w-full"
+        >
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
           <polyline points="14 2 14 8 20 8" />
           <line x1="16" y1="13" x2="8" y2="13" />
@@ -220,17 +222,15 @@ export const apps: OSApp[] = [
   },
 ];
 
-export const appsById = Object.fromEntries(apps.map((a) => [a.id, a])) as Record<
-  AppId,
-  OSApp
->;
+export const appsById = Object.fromEntries(
+  apps.map((a) => [a.id, a]),
+) as Record<AppId, OSApp>;
 
 export const pinnedApps: AppId[] = [
   "overview",
   "projects",
   "activity",
   "experience",
-  "resume",
   "music",
   "about",
   "contact",
@@ -239,4 +239,3 @@ export const pinnedApps: AppId[] = [
   "settings",
   "readme",
 ];
-

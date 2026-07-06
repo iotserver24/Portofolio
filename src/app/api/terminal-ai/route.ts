@@ -14,10 +14,16 @@ function summarizeUpstreamBody(bodyText: string) {
   const trimmed = bodyText.trim();
   if (!trimmed) return "";
   // If HTML, avoid returning a whole page.
-  if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html") || trimmed.includes("<html")) {
+  if (
+    trimmed.startsWith("<!DOCTYPE") ||
+    trimmed.startsWith("<html") ||
+    trimmed.includes("<html")
+  ) {
     const titleMatch = trimmed.match(/<title>([^<]+)<\/title>/i);
     const title = titleMatch?.[1]?.trim();
-    return title ? `Upstream returned HTML (${title}). Check OPENAI_BASE_URL/model/key.` : "Upstream returned HTML. Check OPENAI_BASE_URL/model/key.";
+    return title
+      ? `Upstream returned HTML (${title}). Check OPENAI_BASE_URL/model/key.`
+      : "Upstream returned HTML. Check OPENAI_BASE_URL/model/key.";
   }
   return trimmed.slice(0, 500);
 }
@@ -128,9 +134,9 @@ export async function POST(req: Request) {
   const portfolioFacts = [
     "Owner/alias: R43AP3R editz (also known as Anish Kumar).",
     "This is a personal portfolio site with a desktop-OS style interface.",
-    "Routes include: /, /about, /projects, /experience, /resume, /activity, /contact, /donate.",
+    "Routes include: /, /about, /projects, /experience, /activity, /contact, /donate.",
     "Key projects include: Xibe AI, Xibe Chat, Xibe Chat CLI, PR Review Bot, Sub.MegaVault, Video-Gen, Pollin-Coder, AniSurge, and more.",
-    "The Terminal supports allowlisted commands: help, clear, whoami, stack, repo, open <appId>, about/projects/activity/experience/resume/contact/donate, ai <question>.",
+    "The Terminal supports allowlisted commands: help, clear, whoami, stack, repo, open <appId>, about/projects/activity/experience/contact/donate, ai <question>.",
   ].join("\n");
 
   const system = [
@@ -138,7 +144,7 @@ export async function POST(req: Request) {
     "Be concise, helpful, and grounded in the portfolio context only.",
     "Never claim you executed real commands or accessed files or the network.",
     "If the user asks for anything unrelated to the portfolio, say so and redirect to relevant commands/pages.",
-    "You may request safe actions by emitting a single marker on its own line exactly like: [[OPEN_APP:appId]] where appId is one of overview, projects, activity, experience, resume, about, contact, donate, terminal.",
+    "You may request safe actions by emitting a single marker on its own line exactly like: [[OPEN_APP:appId]] where appId is one of overview, projects, activity, experience, about, contact, donate, terminal.",
     "",
     "Portfolio facts:",
     portfolioFacts,
@@ -170,7 +176,9 @@ export async function POST(req: Request) {
       const text = await upstream.text().catch(() => "");
       const summary = summarizeUpstreamBody(text);
       return NextResponse.json(
-        { error: `Upstream error (${upstream.status}): ${summary || upstream.statusText}` },
+        {
+          error: `Upstream error (${upstream.status}): ${summary || upstream.statusText}`,
+        },
         { status: 502 },
       );
     }
@@ -182,7 +190,10 @@ export async function POST(req: Request) {
       if (typeof content === "string") {
         return new NextResponse(content, {
           status: 200,
-          headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+          headers: {
+            "content-type": "text/plain; charset=utf-8",
+            "cache-control": "no-store",
+          },
         });
       }
     } catch {
@@ -190,7 +201,10 @@ export async function POST(req: Request) {
     }
     return new NextResponse(text, {
       status: 200,
-      headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
     });
   }
 
@@ -227,7 +241,9 @@ export async function POST(req: Request) {
     const text = await upstream.text().catch(() => "");
     const summary = summarizeUpstreamBody(text);
     return NextResponse.json(
-      { error: `Upstream error (${upstream.status}): ${summary || upstream.statusText}` },
+      {
+        error: `Upstream error (${upstream.status}): ${summary || upstream.statusText}`,
+      },
       { status: 502 },
     );
   }
@@ -250,17 +266,25 @@ export async function POST(req: Request) {
       if (typeof fromChat === "string" && fromChat) {
         return new NextResponse(fromChat, {
           status: 200,
-          headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+          headers: {
+            "content-type": "text/plain; charset=utf-8",
+            "cache-control": "no-store",
+          },
         });
       }
       const fromResponses =
         json?.output_text ||
-        json?.output?.map?.((o: any) => o?.content?.map?.((c: any) => c?.text).join("")).join("") ||
+        json?.output
+          ?.map?.((o: any) => o?.content?.map?.((c: any) => c?.text).join(""))
+          .join("") ||
         null;
       if (typeof fromResponses === "string" && fromResponses) {
         return new NextResponse(fromResponses, {
           status: 200,
-          headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+          headers: {
+            "content-type": "text/plain; charset=utf-8",
+            "cache-control": "no-store",
+          },
         });
       }
     } catch {
@@ -269,7 +293,10 @@ export async function POST(req: Request) {
 
     return new NextResponse(text, {
       status: 200,
-      headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
     });
   }
 
@@ -284,4 +311,3 @@ export async function POST(req: Request) {
     },
   });
 }
-

@@ -44,8 +44,8 @@ function formatHelp(): string {
     "  whoami               About me (short)",
     "  stack                Tech stack",
     "  repo                 Repository link",
-    "  open <appId>          Open an OS app (overview/projects/activity/experience/resume/about/contact/donate/terminal)",
-    "  about|projects|activity|experience|resume|contact|donate",
+    "  open <appId>          Open an OS app (overview/projects/activity/experience/about/contact/donate/terminal)",
+    "  about|projects|activity|experience|contact|donate",
     "                       Open a specific app",
     "  ai <question>         Ask the portfolio AI (streams)",
     "",
@@ -138,7 +138,10 @@ export function TerminalApp() {
 
       switch (cmd) {
         case "help":
-          return { kind: "sync", lines: [{ kind: "output", text: formatHelp() }] };
+          return {
+            kind: "sync",
+            lines: [{ kind: "output", text: formatHelp() }],
+          };
         case "clear":
           return {
             kind: "sync",
@@ -163,7 +166,12 @@ export function TerminalApp() {
             lines: [
               {
                 kind: "output",
-                text: ["Next.js (App Router)", "React", "TypeScript", "Tailwind CSS"].join("\n"),
+                text: [
+                  "Next.js (App Router)",
+                  "React",
+                  "TypeScript",
+                  "Tailwind CSS",
+                ].join("\n"),
               },
             ],
           };
@@ -180,28 +188,47 @@ export function TerminalApp() {
         case "open": {
           const target = rest[0];
           if (!target) {
-            return { kind: "sync", lines: [{ kind: "error", text: "Usage: open <appId>" }] };
+            return {
+              kind: "sync",
+              lines: [{ kind: "error", text: "Usage: open <appId>" }],
+            };
           }
           const res = openIfExists(target);
-          if (!res.ok) return { kind: "sync", lines: [{ kind: "error", text: res.error }] };
-          return { kind: "sync", lines: [{ kind: "output", text: `Opened ${target}` }] };
+          if (!res.ok)
+            return {
+              kind: "sync",
+              lines: [{ kind: "error", text: res.error }],
+            };
+          return {
+            kind: "sync",
+            lines: [{ kind: "output", text: `Opened ${target}` }],
+          };
         }
         case "about":
         case "projects":
         case "activity":
         case "experience":
-        case "resume":
         case "contact":
         case "donate": {
           const res = openIfExists(cmd);
-          if (!res.ok) return { kind: "sync", lines: [{ kind: "error", text: res.error }] };
-          return { kind: "sync", lines: [{ kind: "output", text: `Opened ${cmd}` }] };
+          if (!res.ok)
+            return {
+              kind: "sync",
+              lines: [{ kind: "error", text: res.error }],
+            };
+          return {
+            kind: "sync",
+            lines: [{ kind: "output", text: `Opened ${cmd}` }],
+          };
         }
         case "ai":
         case "ask": {
           const question = trimmed.replace(/^(ai|ask)\s+/i, "");
           if (!question) {
-            return { kind: "sync", lines: [{ kind: "error", text: `Usage: ${cmd} <question>` }] };
+            return {
+              kind: "sync",
+              lines: [{ kind: "error", text: `Usage: ${cmd} <question>` }],
+            };
           }
 
           const controller = new AbortController();
@@ -274,7 +301,12 @@ export function TerminalApp() {
         default:
           return {
             kind: "sync",
-            lines: [{ kind: "error", text: `Command not found: ${cmd}\nType \`help\`.` }],
+            lines: [
+              {
+                kind: "error",
+                text: `Command not found: ${cmd}\nType \`help\`.`,
+              },
+            ],
           };
       }
     },
@@ -285,7 +317,10 @@ export function TerminalApp() {
     async (raw: string) => {
       const trimmed = raw.trimEnd();
 
-      setLines((prev) => [...prev, { kind: "input", text: `${prompt} ${trimmed}` }]);
+      setLines((prev) => [
+        ...prev,
+        { kind: "input", text: `${prompt} ${trimmed}` },
+      ]);
       setValue("");
       setHistoryIdx(null);
 
@@ -334,7 +369,10 @@ export function TerminalApp() {
             if (!res.ok) {
               setLines((prev) => [...prev, { kind: "error", text: res.error }]);
             } else {
-              setLines((prev) => [...prev, { kind: "output", text: `Opened ${id}` }]);
+              setLines((prev) => [
+                ...prev,
+                { kind: "output", text: `Opened ${id}` },
+              ]);
             }
           }
         }
@@ -373,7 +411,8 @@ export function TerminalApp() {
         if (history.length === 0) return;
         e.preventDefault();
         setHistoryIdx((prev) => {
-          const nextIdx = prev === null ? history.length - 1 : Math.max(0, prev - 1);
+          const nextIdx =
+            prev === null ? history.length - 1 : Math.max(0, prev - 1);
           setValue(history[nextIdx] ?? "");
           return nextIdx;
         });
@@ -469,4 +508,3 @@ export function TerminalApp() {
     </div>
   );
 }
-
