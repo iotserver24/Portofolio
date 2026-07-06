@@ -18,8 +18,18 @@ function IconTorchOff({ className }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M8 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10 13h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M8 7h8"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 13h4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -40,10 +50,30 @@ function IconTorchOn({ className }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M8 7h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10 13h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M7 12l-2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17 12l2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M8 7h8"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 13h4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7 12l-2 2"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M17 12l2 2"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -108,7 +138,10 @@ export function MobileLockScreen({
   const [pin, setPin] = useState("");
   const [errorShake, setErrorShake] = useState(false);
 
-  const hint = useMemo(() => passcode ? "Swipe up to enter PIN" : "Swipe up to open", [passcode]);
+  const hint = useMemo(
+    () => (passcode ? "Swipe up to enter PIN" : "Swipe up to open"),
+    [passcode],
+  );
 
   useEffect(() => {
     const t = window.setInterval(() => setNow(new Date()), 10_000);
@@ -120,27 +153,6 @@ export function MobileLockScreen({
     const t = window.setTimeout(() => setToast(null), 2200);
     return () => window.clearTimeout(t);
   }, [toast]);
-
-  // Auto-swipe up and unlock if no passcode is set (delightful automatic greeting)
-  useEffect(() => {
-    if (passcode) return; // skip if passcode is active
-    
-    const tStart = window.setTimeout(() => {
-      setIsDragging(true);
-      let currentDrag = 0;
-      const interval = window.setInterval(() => {
-        currentDrag += 16;
-        setDragY(currentDrag);
-        if (currentDrag >= 160) {
-          window.clearInterval(interval);
-          setIsDragging(false);
-          onUnlock();
-        }
-      }, 16);
-    }, 1000);
-
-    return () => window.clearTimeout(tStart);
-  }, [passcode, onUnlock]);
 
   const stopStream = () => {
     const s = streamRef.current;
@@ -269,8 +281,10 @@ export function MobileLockScreen({
       {showPinView ? (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl">
           <div className="flex flex-col items-center gap-5 w-[min(360px,90vw)]">
-            <div className="text-sm font-semibold tracking-tight text-white/80">Enter Passcode</div>
-            
+            <div className="text-sm font-semibold tracking-tight text-white/80">
+              Enter Passcode
+            </div>
+
             {/* PIN Dots */}
             <div className="flex justify-center gap-5 py-2">
               {[...Array(4)].map((_, i) => (
@@ -322,8 +336,18 @@ export function MobileLockScreen({
                 className="flex h-16 w-16 items-center justify-center rounded-full text-zinc-400 transition-all hover:text-zinc-200"
                 aria-label="Backspace"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414A2 2 0 0010.828 19h7.344a2 2 0 002-2V7a2 2 0 00-2-2h-7.344a2 2 0 00-1.414.586L3 12z" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414A2 2 0 0010.828 19h7.344a2 2 0 002-2V7a2 2 0 00-2-2h-7.344a2 2 0 00-1.414.586L3 12z"
+                  />
                 </svg>
               </button>
             </div>
@@ -335,7 +359,9 @@ export function MobileLockScreen({
           className="relative h-full w-full touch-none"
           style={{
             transform: `translateY(${entered ? -dragY : 0}px)`,
-            transition: isDragging ? undefined : "transform 220ms cubic-bezier(0.2,0.9,0.2,1)",
+            transition: isDragging
+              ? undefined
+              : "transform 220ms cubic-bezier(0.2,0.9,0.2,1)",
             touchAction: "none",
           }}
           ref={(node) => {
@@ -396,16 +422,36 @@ export function MobileLockScreen({
                 className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-white/14 bg-black/35 text-white shadow-[0_18px_70px_rgba(0,0,0,0.55)] backdrop-blur"
                 aria-label="Open camera"
               >
-                <svg className="h-9 w-9 opacity-90" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M5 7h3l2-2h4l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 17a3 3 0 1 0 0-6a3 3 0 0 0 0 6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  className="h-9 w-9 opacity-90"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden
+                >
+                  <path
+                    d="M5 7h3l2-2h4l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 17a3 3 0 1 0 0-6a3 3 0 0 0 0 6z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
 
             <div className="mt-4 flex flex-col items-center gap-3">
               <div className="h-1 w-16 rounded-full bg-white/25" />
-              <div className="text-[12px] font-medium text-white/70">{hint}</div>
+              <div className="text-[12px] font-medium text-white/70">
+                {hint}
+              </div>
             </div>
           </div>
         </div>
