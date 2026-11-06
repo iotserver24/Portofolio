@@ -7,6 +7,18 @@ type Mode = "collab" | "blueprint" | "follow";
 type Agent = { x: number; y: number; color: string; name: string; seed: number };
 const colors = ["#f87171", "#38bdf8", "#a78bfa", "#34d399", "#fbbf24", "#fb7185", "#22d3ee"];
 const names = ["pixel", "nova", "orbit", "atlas", "echo", "byte", "muse", "flux", "neo", "zero", "iris", "node", "sage", "wave"];
+const themes = [
+  { id: "crimson", accent: "#ef4444" },
+  { id: "electric", accent: "#70aaff" },
+  { id: "terminal", accent: "#63dca0" },
+  { id: "violet", accent: "#bf9bff" },
+  { id: "amber", accent: "#f4b860" },
+  { id: "arctic", accent: "#5ed9e7" },
+  { id: "rose", accent: "#f794ac" },
+  { id: "mono", accent: "#e8e6df" },
+  { id: "cobalt", accent: "#8da5ff" },
+  { id: "citrus", accent: "#c3de72" },
+] as const;
 const projects = [
   { title: "Xibe AI", category: "AI / DEVELOPER TOOLS", desc: "A platform for building websites and apps with AI models, GitHub integration, and deployment tools.", tags: ["Node.js", "AI", "Web"], link: "https://xibe.app", image: "/xibe-logo.png" },
   { title: "Sub.MegaVault", category: "CLOUD / STORAGE", desc: "S3-compatible storage built for a more flexible cloud, with support for Cloudflare R2 and AWS S3.", tags: ["Next.js", "TypeScript", "S3"], link: "https://sub.megavault.pw", image: "/projects/sub-megavault.png" },
@@ -103,8 +115,18 @@ function Canvas({ count, mode, run, onFps, snap }: { count: number; mode: Mode; 
 }
 
 export default function NewPortfolio() {
+  const [theme, setTheme] = useState<(typeof themes)[number]>(themes[0]);
   const [typed, setTyped] = useState(0); const [run, setRun] = useState(0); const [count, setCount] = useState(20); const [mode, setMode] = useState<Mode>("collab"); const [fps, setFps] = useState(60); const [phase, setPhase] = useState(0); const [audio, setAudio] = useState(false); const [drawer, setDrawer] = useState(false); const [copied, setCopied] = useState(false);
   const [name, setName] = useState("Anish Kumar"); const [role, setRole] = useState("Developer, founder & curious human."); const [bio, setBio] = useState("I’m a full-stack developer, engineering student and founder of Megavault. I build Supercharge, cloud platforms and AI-powered coding tools that make ambitious ideas useful."); const [accent, setAccent] = useState("#ef4444");
+  useEffect(() => {
+    let previous = "";
+    try { previous = sessionStorage.getItem("portfolio-theme") ?? ""; } catch { /* Storage is optional. */ }
+    const options = themes.filter(item => item.id !== previous);
+    const selected = options[Math.floor(Math.random() * options.length)];
+    setTheme(selected);
+    setAccent(selected.accent);
+    try { sessionStorage.setItem("portfolio-theme", selected.id); } catch { /* Storage is optional. */ }
+  }, []);
   const audioCtx = useRef<AudioContext | null>(null); const audioEnabled = useRef(false);
   const snap = useCallback(() => { if (!audioEnabled.current || !audioCtx.current) return; const ctx = audioCtx.current; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.frequency.setValueAtTime(750, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + .06); gain.gain.setValueAtTime(.04, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .06); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .06); }, []);
   useEffect(() => {
@@ -162,7 +184,7 @@ export default function NewPortfolio() {
   useEffect(() => { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("in-view"); }), { threshold: .08 }); document.querySelectorAll(".reveal").forEach(el => observer.observe(el)); return () => observer.disconnect(); }, []);
   const replay = () => { window.scrollTo({ top: 0, behavior: "instant" }); setPhase(0); setRun(v => v + 1); };
   const toggleAudio = () => { if (!audioCtx.current) audioCtx.current = new AudioContext(); void audioCtx.current.resume(); audioEnabled.current = !audioEnabled.current; setAudio(audioEnabled.current); if (audioEnabled.current) snap(); };
-  return <main className={`new-portfolio phase-${phase} ${mode === "blueprint" ? "blueprint" : ""}`} style={{ "--accent": accent } as React.CSSProperties}>
+  return <main className={`new-portfolio theme-${theme.id} phase-${phase} ${mode === "blueprint" ? "blueprint" : ""}`} style={{ "--accent": accent } as React.CSSProperties}>
     <Canvas count={count} mode={mode} run={run} onFps={setFps} snap={snap} />
     {phase === 0 && <div className="initializing"><span className="pulse-dot" /> INITIALIZING {count} COLLABORATIVE AGENTS <span className="init-muted">{"// CONNECTING TO CANVAS"}</span></div>}
     <div className="portfolio-content" key={run}>
