@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useEffect } from "react";
 
 import { OSWindow } from "@/components/os/desktop/OSWindow";
-import { DesktopOSProvider, useDesktopOS } from "@/components/os/state/DesktopOSContext";
+import { useDesktopOS } from "@/components/os/state/DesktopOSContext";
 import { appsById } from "@/os/apps";
 
 function DesktopStage({ children }: { children: ReactNode }) {

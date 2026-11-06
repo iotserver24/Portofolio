@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDesktopOS } from "@/components/os/state/DesktopOSContext";
 
 export function DesktopWidgets() {

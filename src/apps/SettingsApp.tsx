@@ -11,8 +11,6 @@ export function SettingsApp() {
     setWidgets,
     isWifiOnline,
     setWifiOnline,
-    audioVolume,
-    setAudioVolume,
     passcode,
     setPasscode,
     desktopIconsVisible,

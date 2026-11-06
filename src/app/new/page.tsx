@@ -28,25 +28,27 @@ function Canvas({ count, mode, run, onFps, snap }: { count: number; mode: Mode; 
   const ref = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -1000, y: -1000 });
   const timeline = useRef({ run: -1, start: 0 });
+  const agentsRef = useRef<Agent[]>([]);
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext("2d"); if (!ctx) return;
     let width = 0, height = 0, frame = 0, last = performance.now(), frames = 0, fpsAt = last, snapped = false;
-    if (timeline.current.run !== run) timeline.current = { run, start: performance.now() };
+    if (timeline.current.run !== run) { timeline.current = { run, start: performance.now() }; agentsRef.current = []; }
     const start = timeline.current.start;
-    const agents: Agent[] = Array.from({ length: count }, (_, i) => ({ x: innerWidth / 2, y: innerHeight / 2, color: colors[i % colors.length], name: `${names[i % names.length]}_${String(i + 1).padStart(2, "0")}`, seed: i * 2.399 }));
+    const agents = agentsRef.current;
+    while (agents.length < count) { const i = agents.length; agents.push({ x: innerWidth / 2, y: innerHeight / 2, color: colors[i % colors.length], name: `${names[i % names.length]}_${String(i + 1).padStart(2, "0")}`, seed: i * 2.399 }); }
     const resize = () => { width = innerWidth; height = innerHeight; const dpr = Math.min(devicePixelRatio || 1, 2); canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = `${width}px`; canvas.style.height = `${height}px`; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
     const move = (e: PointerEvent) => { mouse.current = { x: e.clientX, y: e.clientY }; };
     resize(); window.addEventListener("resize", resize); window.addEventListener("pointermove", move);
     const draw = (now: number) => {
-      const t = (now - start) / 1000; const dt = Math.min((now - last) / 16.67, 3); last = now; ctx.clearRect(0, 0, width, height);
+      const t = (now - start) / 1000; const introDuration = .35; const dt = Math.min((now - last) / 16.67, 3); last = now; ctx.clearRect(0, 0, width, height);
       const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-build]"));
       const activeElements = Array.from(document.querySelectorAll<HTMLElement>("[data-building=active], [data-building=typing]"));
-      const progressFor = (el: HTMLElement) => el.dataset.building === "typing" ? (el.dataset.order === "type-first" ? 0 : 1) : Math.max(0, Math.min(1, (now - Number(el.dataset.started || now) - 150) / 650));
+      const progressFor = (el: HTMLElement) => el.dataset.building === "typing" ? (el.dataset.order === "type-first" ? 0 : 1) : Math.max(0, Math.min(1, (now - Number(el.dataset.started || now) - 50) / 350));
       const buildDone = document.querySelector("[data-build-complete=true]");
       const visible = targets.map(el => ({ el, rect: el.getBoundingClientRect() })).filter(({ rect }) => rect.bottom > 0 && rect.top < height);
       if (t > 3.6 && !snapped) { snapped = true; snap(); }
-      if ((t > 1.5 && activeElements.length > 0) || mode === "blueprint") {
+      if ((t > introDuration && activeElements.length > 0) || mode === "blueprint") {
         visible.forEach(({ el, rect }, i) => {
           if (mode !== "blueprint" && el.dataset.building !== "active" && el.dataset.building !== "typing") return;
           const progress = mode === "blueprint" ? 1 : progressFor(el);
@@ -57,9 +59,13 @@ function Canvas({ count, mode, run, onFps, snap }: { count: number; mode: Mode; 
           ctx.font = "10px monospace"; const label = `${el.dataset.build} ${Math.round(w)}×${Math.round(h)}`; ctx.fillStyle = colors[i % colors.length]; ctx.fillRect(rect.left, rect.top - 17, ctx.measureText(label).width + 10, 16); ctx.fillStyle = "#09090b"; ctx.fillText(label, rect.left + 5, rect.top - 5); ctx.strokeStyle = colors[i % colors.length]; ctx.globalAlpha = .5; ctx.beginPath(); ctx.moveTo(rect.left + w / 2 - 6, rect.top + h / 2); ctx.lineTo(rect.left + w / 2 + 6, rect.top + h / 2); ctx.moveTo(rect.left + w / 2, rect.top + h / 2 - 6); ctx.lineTo(rect.left + w / 2, rect.top + h / 2 + 6); ctx.stroke(); ctx.restore();
         });
       }
-      agents.forEach((a, i) => {
+      agents.slice(0, count).forEach((a, i) => {
+        const victimIndex = count - 1 - i;
+        const collisionAt = 2.35 + victimIndex * .25;
+        const isVictim = count > 20 && victimIndex >= 0 && victimIndex < 4;
+        if (isVictim && t >= collisionAt + .18) return;
         let tx: number, ty: number;
-        if (t < 1.5) { const angle = a.seed + t * 2; const radius = 18 + (i % 7) * 7 + Math.sin(t * 4 + i) * 4; tx = width / 2 + Math.cos(angle) * radius; ty = height / 2 + Math.sin(angle) * radius; }
+        if (t < introDuration) { const angle = a.seed + t * 2; const radius = 18 + (i % 7) * 7 + Math.sin(t * 4 + i) * 4; tx = width / 2 + Math.cos(angle) * radius; ty = height / 2 + Math.sin(angle) * radius; }
         else if (mode === "follow" && mouse.current.x > 0) { const angle = a.seed + now / 1800; const radius = 20 + (i % 10) * 9; tx = mouse.current.x + Math.cos(angle) * radius; ty = mouse.current.y + Math.sin(angle) * radius; }
         else if (buildDone && mode === "collab") { tx = width - 65 + Math.cos(a.seed) * (i % 7) * 5; ty = height - 90 + Math.sin(a.seed) * (i % 7) * 5; }
         else { const job = targets[i % Math.max(targets.length, 1)]; const jobRect = job?.getBoundingClientRect(); const jobVisible = jobRect && jobRect.bottom > 0 && jobRect.top < height; const target = jobVisible ? jobRect : visible[i % Math.max(visible.length, 1)]?.rect; const cycle = Math.floor(t / 5 + i / 8); const rx = ((Math.sin(i * 91.7 + cycle * 17) + 1) / 2); const ry = ((Math.cos(i * 43.3 + cycle * 11) + 1) / 2); tx = target ? target.left + target.width * rx : width * rx; ty = target ? target.top + target.height * ry : height * ry; tx += Math.sin(t * .8 + i) * 12; ty += Math.cos(t * .7 + i) * 10; }
@@ -76,7 +82,15 @@ function Canvas({ count, mode, run, onFps, snap }: { count: number; mode: Mode; 
             if (activeElement.dataset.building === "typing") { tx = activeBuild.left + Math.min(activeBuild.width - 12, 18 + (workAge / 800) * Math.min(activeBuild.width - 30, 200)); ty = activeBuild.top + Math.min(activeBuild.height - 8, 22); }
           } else { tx = activeBuild.left; ty = activeBuild.top; }
         }
-        const ease = isWorker ? (workAge > 150 ? .8 : .18) : 1 - Math.pow(t < 1.5 ? .82 : .965, dt); a.x += (tx - a.x) * ease; a.y += (ty - a.y) * ease;
+        if (isVictim && t > collisionAt - .35) {
+          const attacker = agents[i - 4];
+          if (attacker) { tx = attacker.x + 4; ty = attacker.y + 4; }
+        }
+        if (isVictim && t >= collisionAt && t < collisionAt + .18) {
+          ctx.save(); ctx.strokeStyle = a.color; ctx.globalAlpha = 1 - (t - collisionAt) / .18; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(a.x, a.y, 5 + (t - collisionAt) * 90, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        }
+        const ease = isWorker ? (workAge > 150 ? .8 : .18) : 1 - Math.pow(t < introDuration ? .82 : .965, dt); a.x += (tx - a.x) * ease; a.y += (ty - a.y) * ease;
         ctx.save(); ctx.translate(a.x, a.y); ctx.shadowColor = "#0009"; ctx.shadowBlur = 5; ctx.fillStyle = a.color; ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 16); ctx.lineTo(4.5, 12); ctx.lineTo(8, 19); ctx.lineTo(11, 17); ctx.lineTo(7, 10); ctx.lineTo(14, 10); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
         if (width > 600 || i % 3 === 0) { ctx.font = "bold 10px monospace"; const agentLabel = isWorker && i === assignedWorker ? `${a.name} · ${activeElement?.dataset.building === "typing" ? "typing" : "resizing"}` : a.name; const labelWidth = ctx.measureText(agentLabel).width + 10; ctx.fillStyle = a.color; ctx.beginPath(); ctx.roundRect(11, 12, labelWidth, 17, 3); ctx.fill(); ctx.fillStyle = "#09090b"; ctx.fillText(isWorker && i === assignedWorker ? `${a.name} · ${activeElement?.dataset.building === "typing" ? "typing" : "resizing"}` : a.name, 16, 24); }
         if (t > 3.6 && t < 4.3 && i % 8 === 0) { ctx.strokeStyle = a.color; ctx.globalAlpha = 1 - (t - 3.6) / .7; ctx.beginPath(); ctx.arc(0, 0, (t - 3.6) * 35, 0, Math.PI * 2); ctx.stroke(); } ctx.restore();
@@ -95,58 +109,62 @@ export default function NewPortfolio() {
   const snap = useCallback(() => { if (!audioEnabled.current || !audioCtx.current) return; const ctx = audioCtx.current; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.frequency.setValueAtTime(750, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + .06); gain.gain.setValueAtTime(.04, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .06); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .06); }, []);
   useEffect(() => {
     setTyped(0);
+    setCount(20);
     const root = document.querySelector<HTMLElement>(".portfolio-content");
     if (!root) return;
     const elements = Array.from(root.querySelectorAll<HTMLElement>("[data-build]"));
     elements.forEach(el => { el.dataset.building = "waiting"; });
     delete root.dataset.buildComplete;
-    let nextWorker = 0;
-    let timer: ReturnType<typeof setTimeout>;
+    const hero = new Set(["NAV_BAR", "TITLE", "DISPLAY_TITLE", "HERO_FRAME", "AVATAR_CONTAINER", "TELEMETRY", "METRICS"]);
+    const timers: ReturnType<typeof setTimeout>[] = [];
     let typing: ReturnType<typeof setInterval> | undefined;
-    const placeNext = () => {
-      const waiting = elements.filter(el => el.dataset.building === "waiting");
-      if (!waiting.length) {
-        root.dataset.buildComplete = "true";
-        setPhase(3);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-      // Parents must be placed first; siblings in the same viewport can build together.
-      const eligible = waiting.filter(el => !el.parentElement?.closest('[data-building="waiting"], [data-building="active"], [data-building="typing"]'));
-      const first = eligible[0];
-      if (!first) return;
-      const firstRect = first.getBoundingClientRect();
-      if (firstRect.top > window.innerHeight * .7 || firstRect.top < 0) window.scrollTo({ top: window.scrollY + firstRect.top - window.innerHeight * .2, behavior: "smooth" });
-      const batch = eligible.filter(el => Math.abs(el.getBoundingClientRect().top - firstRect.top) < window.innerHeight * .65).slice(0, 5);
-      batch.forEach((el, batchIndex) => {
-        el.dataset.order = batchIndex % 2 === 0 ? "type-first" : "resize-first";
-        el.dataset.building = el.dataset.order === "type-first" ? "typing" : "active";
-        if (el.dataset.build === "HERO_FRAME") typing = setInterval(() => setTyped(v => Math.min(v + 1, 240)), 18);
-        el.dataset.worker = String(nextWorker);
-        nextWorker += 2;
+    const schedule = (fn: () => void, delay: number) => { timers.push(setTimeout(fn, delay)); };
+    const beginElement = (el: HTMLElement, index: number, duration: number) => {
+      el.dataset.order = index % 2 === 0 ? "type-first" : "resize-first";
+      el.dataset.building = el.dataset.order === "type-first" ? "typing" : "active";
+      el.dataset.worker = String((index * 2) % (hero.has(el.dataset.build ?? "") ? 20 : 42));
+      el.dataset.started = String(performance.now());
+      if (el.dataset.build === "HERO_FRAME") typing = setInterval(() => setTyped(v => Math.min(v + 5, 240)), 18);
+      schedule(() => {
+        el.dataset.building = el.dataset.order === "type-first" ? "active" : "typing";
         el.dataset.started = String(performance.now());
-      });
-      timer = setTimeout(() => {
-        batch.forEach(el => {
-          el.dataset.building = el.dataset.order === "type-first" ? "active" : "typing";
-          el.dataset.started = String(performance.now());
-        });
-        snap();
-        timer = setTimeout(() => {
-          batch.forEach(el => { el.dataset.building = "placed"; });
-          placeNext();
-        }, 850);
-      }, 800);
+      }, duration / 2);
+      schedule(() => { el.dataset.building = "placed"; }, duration);
     };
-    const begin = setTimeout(() => { setPhase(1); setPhase(2); placeNext(); }, 1500);
-    return () => { clearTimeout(begin); clearTimeout(timer); if (typing) clearInterval(typing); };
+    schedule(() => {
+      setPhase(2);
+      elements.filter(el => hero.has(el.dataset.build ?? "")).forEach((el, index) => {
+        schedule(() => beginElement(el, index, 1250), (index % 3) * 180);
+      });
+    }, 350);
+    const sections = Array.from(root.querySelectorAll<HTMLElement>("section.section[data-build]"));
+    schedule(() => setCount(46), 1900);
+    sections.forEach((section, sectionIndex) => {
+      const start = 1900 + sectionIndex * 330;
+      schedule(() => {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+        beginElement(section, 10 + sectionIndex, 320);
+        section.querySelectorAll<HTMLElement>("[data-build]").forEach((el, childIndex) => {
+          schedule(() => beginElement(el, 15 + sectionIndex * 8 + childIndex, 300), 60 + (childIndex % 4) * 35);
+        });
+      }, start);
+    });
+    schedule(() => {
+      elements.forEach(el => { el.dataset.building = "placed"; });
+      root.dataset.buildComplete = "true";
+      setTyped(240);
+      setPhase(3);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      snap();
+    }, 3800);
+    return () => { timers.forEach(clearTimeout); if (typing) clearInterval(typing); };
   }, [run, snap]);
   useEffect(() => { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("in-view"); }), { threshold: .08 }); document.querySelectorAll(".reveal").forEach(el => observer.observe(el)); return () => observer.disconnect(); }, []);
   const replay = () => { window.scrollTo({ top: 0, behavior: "instant" }); setPhase(0); setRun(v => v + 1); };
   const toggleAudio = () => { if (!audioCtx.current) audioCtx.current = new AudioContext(); void audioCtx.current.resume(); audioEnabled.current = !audioEnabled.current; setAudio(audioEnabled.current); if (audioEnabled.current) snap(); };
   return <main className={`new-portfolio phase-${phase} ${mode === "blueprint" ? "blueprint" : ""}`} style={{ "--accent": accent } as React.CSSProperties}>
     <Canvas count={count} mode={mode} run={run} onFps={setFps} snap={snap} />
-    {phase === 0 && <div className="initializing"><span className="pulse-dot" /> INITIALIZING {count} COLLABORATIVE AGENTS <span className="init-muted">// CONNECTING TO CANVAS</span></div>}
+    {phase === 0 && <div className="initializing"><span className="pulse-dot" /> INITIALIZING {count} COLLABORATIVE AGENTS <span className="init-muted">{"// CONNECTING TO CANVAS"}</span></div>}
     <div className="portfolio-content" key={run}>
       <header className="new-nav build-nav" data-build="NAV_BAR"><a className="brand" href="#top"><span className="brand-mark">A<span>K</span></span><span>ANISH KUMAR<small>INDEPENDENT BUILDER</small></span></a><nav><a href="#about">About</a><a href="#work">Work</a><a href="#stack">Stack</a><a href="#contact">Contact <span>↗</span></a></nav><span className="nav-status"><i /> AVAILABLE FOR IDEAS</span></header>
       <section className="hero" id="top"><div className="hero-top build-title" data-build="TITLE"><span>THE PORTFOLIO OF ANISH KUMAR</span><span>EST. 2023 &nbsp; / &nbsp; INDIA</span></div><h1 className="build-title" data-build="DISPLAY_TITLE"><span className="typed-title">PORTFOLIO</span></h1><div className="hero-grid"><div className="hero-copy build-copy" data-build="HERO_FRAME"><div className="hero-intro">Hello, I’m</div><h2><em>{name.toUpperCase()}.</em></h2><div className="live-label"><span /> {role.toUpperCase()}</div><p className="typed-bio">{bio.slice(0, typed)}<span className="typing-caret">▍</span></p><div className="hero-actions"><a className="primary-link" href="#work">Explore selected work <span>↗</span></a><a className="text-link" href="#contact">Get in touch ↗</a></div><div className="hero-foot"><span>SCROLL TO EXPLORE</span><span>↓</span></div></div><div className="portrait build-avatar" data-build="AVATAR_CONTAINER"><div className="portrait-grid" /><img src="/Photo.png" alt="Anish Kumar" /><div className="portrait-top"><span>FIG. 001 / THE OPERATOR</span><span>✳</span></div><div className="portrait-bottom"><span><i /> OPERATOR ACTIVE</span><span>AK / IN</span></div></div><div className="hero-monitor build-avatar" data-build="TELEMETRY"><div className="monitor-header"><span>01. / SYSTEM STATUS</span><span>● ONLINE</span></div><h3>Building useful things.</h3><p>Cloud storage, AI services, and developer tools — built with curiosity and a focus on real problems.</p><div className="monitor-line"><span>FOCUS</span><b>FULL-STACK DEVELOPMENT</b></div><div className="monitor-line"><span>BASE</span><b>INDIA / WORLDWIDE</b></div><div className="monitor-line"><span>CURRENTLY</span><b>MEGAVAULT + XIBE</b></div><span className="monitor-tag">SYSTEM OPERATIONAL ↗</span></div></div><div className="metrics build-metrics" data-build="METRICS"><div><strong>2023<span>↗</span></strong><small>BUILDING SINCE</small></div><div><strong>20<span>+</span></strong><small>PROJECTS IN PORTFOLIO</small></div><div><strong>3</strong><small>CORE FOCUSES: CLOUD, AI, TOOLS</small></div><div className="metric-note">A work in progress.<br /><span>Always shipping, always learning.</span></div></div></section>
