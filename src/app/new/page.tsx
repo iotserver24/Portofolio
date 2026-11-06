@@ -1,0 +1,133 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import "./style.css";
+
+type Mode = "collab" | "blueprint" | "follow";
+type Agent = { x: number; y: number; color: string; name: string; seed: number };
+const colors = ["#f87171", "#38bdf8", "#a78bfa", "#34d399", "#fbbf24", "#fb7185", "#22d3ee"];
+const names = ["pixel", "nova", "orbit", "atlas", "echo", "byte", "muse", "flux", "neo", "zero", "iris", "node", "sage", "wave"];
+const projects = [
+  { title: "Xibe AI", category: "AI / DEVELOPER TOOLS", desc: "A platform for building websites and apps with AI models, GitHub integration, and deployment tools.", tags: ["Node.js", "AI", "Web"], link: "https://xibe.app", image: "/xibe-logo.png" },
+  { title: "Sub.MegaVault", category: "CLOUD / STORAGE", desc: "S3-compatible storage built for a more flexible cloud, with support for Cloudflare R2 and AWS S3.", tags: ["Next.js", "TypeScript", "S3"], link: "https://sub.megavault.pw", image: "/projects/sub-megavault.png" },
+  { title: "PR Review Bot", category: "AUTOMATION / OPEN SOURCE", desc: "An AI GitHub bot that reviews pull requests and delivers code quality feedback automatically.", tags: ["Node.js", "OpenAI", "Docker"], link: "https://github.com/iotserver24/PR-REVIEW-XIBE", image: "/pr-logo.png" },
+  { title: "Pollin-Coder", category: "AI / EXPERIMENTS", desc: "Turn app ideas into full projects with live previews, modular output, and a gallery of creations.", tags: ["React", "TypeScript", "OpenAI"], link: "https://github.com/iotserver24/pollin-coder", image: "/projects/pollin-coder.png" },
+];
+const skills = [ ["01", "Languages", "JavaScript · TypeScript · Python · C++"], ["02", "Frontend", "React · Next.js · Tailwind CSS"], ["03", "Backend", "Node.js · Express · APIs"], ["04", "Cloud", "Cloudflare · AWS S3 · Railway"], ["05", "AI & automation", "OpenAI API · GitHub API · CLI tools"], ["06", "Mobile & data", "React Native · Flutter · Redis · SQLite"] ];
+
+function Canvas({ count, mode, run, onFps, snap }: { count: number; mode: Mode; run: number; onFps: (fps: number) => void; snap: () => void }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const mouse = useRef({ x: -1000, y: -1000 });
+  const timeline = useRef({ run: -1, start: 0 });
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
+    let width = 0, height = 0, frame = 0, last = performance.now(), frames = 0, fpsAt = last, snapped = false;
+    if (timeline.current.run !== run) timeline.current = { run, start: performance.now() };
+    const start = timeline.current.start;
+    const arrivals = new Map<HTMLElement, number>();
+    const agents: Agent[] = Array.from({ length: count }, (_, i) => ({ x: innerWidth / 2, y: innerHeight / 2, color: colors[i % colors.length], name: `${names[i % names.length]}_${String(i + 1).padStart(2, "0")}`, seed: i * 2.399 }));
+    const resize = () => { width = innerWidth; height = innerHeight; const dpr = Math.min(devicePixelRatio || 1, 2); canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = `${width}px`; canvas.style.height = `${height}px`; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const move = (e: PointerEvent) => { mouse.current = { x: e.clientX, y: e.clientY }; };
+    resize(); window.addEventListener("resize", resize); window.addEventListener("pointermove", move);
+    const draw = (now: number) => {
+      const t = (now - start) / 1000; const dt = Math.min((now - last) / 16.67, 3); last = now; ctx.clearRect(0, 0, width, height);
+      const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-build]"));
+      const activeElement = document.querySelector<HTMLElement>("[data-building=active], [data-building=typing]");
+      const activeBuild = activeElement?.getBoundingClientRect();
+      const assignedWorker = Number(activeElement?.dataset.worker ?? 0) % count;
+      const buildDone = document.querySelector("[data-build-complete=true]");
+      const visible = targets.map(el => ({ el, rect: el.getBoundingClientRect() })).filter(({ rect }) => rect.bottom > 0 && rect.top < height);
+      if (t > 3.6 && !snapped) { snapped = true; snap(); }
+      if ((t > 1.5 && activeBuild) || mode === "blueprint") {
+        visible.slice(0, 12).forEach(({ el, rect }, i) => {
+          if (mode !== "blueprint" && el.dataset.building !== "active" && el.dataset.building !== "typing") return;
+          if (t > 7.5 && !arrivals.has(el)) arrivals.set(el, now);
+          const arrivalAge = (now - (arrivals.get(el) ?? now)) / 1000;
+          
+          const progress = mode === "blueprint" && t > 5.2 ? 1 : t > 7.5 ? Math.min(1, arrivalAge / .65) : Math.max(0, Math.min(1, (t - 1.5 - i * .12) / 1.7));
+          if (!progress) return;
+          const w = rect.width * progress, h = rect.height * progress;
+          ctx.save(); ctx.globalAlpha = t > 7.5 ? .8 : t > 4.3 && mode !== "blueprint" ? Math.max(0, 1 - (t - 4.3)) : .8; ctx.strokeStyle = colors[i % colors.length]; ctx.fillStyle = "rgba(59,130,246,.06)"; ctx.setLineDash([4, 4]); ctx.strokeRect(rect.left, rect.top, w, h); ctx.fillRect(rect.left, rect.top, w, h); ctx.setLineDash([]);
+          [[rect.left,rect.top],[rect.left+w,rect.top],[rect.left,rect.top+h],[rect.left+w,rect.top+h]].forEach(([x,y]) => { ctx.fillStyle = "#fff"; ctx.fillRect(x-3,y-3,6,6); ctx.strokeRect(x-3,y-3,6,6); });
+          ctx.font = "10px monospace"; const label = `${el.dataset.build} ${Math.round(w)}×${Math.round(h)}`; ctx.fillStyle = colors[i % colors.length]; ctx.fillRect(rect.left, rect.top - 17, ctx.measureText(label).width + 10, 16); ctx.fillStyle = "#09090b"; ctx.fillText(label, rect.left + 5, rect.top - 5); ctx.restore();
+        });
+      }
+      agents.forEach((a, i) => {
+        let tx: number, ty: number;
+        if (t < 1.5) { const angle = a.seed + t * 2; const radius = 18 + (i % 7) * 7 + Math.sin(t * 4 + i) * 4; tx = width / 2 + Math.cos(angle) * radius; ty = height / 2 + Math.sin(angle) * radius; }
+        else if (mode === "follow" && mouse.current.x > 0) { const angle = a.seed + now / 1800; const radius = 20 + (i % 10) * 9; tx = mouse.current.x + Math.cos(angle) * radius; ty = mouse.current.y + Math.sin(angle) * radius; }
+        else if (buildDone && mode === "collab") { tx = width - 65 + Math.cos(a.seed) * (i % 7) * 5; ty = height - 90 + Math.sin(a.seed) * (i % 7) * 5; }
+        else { const job = targets[i % Math.max(targets.length, 1)]; const jobRect = job?.getBoundingClientRect(); const jobVisible = jobRect && jobRect.bottom > 0 && jobRect.top < height; const target = activeBuild && (i === assignedWorker || i === (assignedWorker + 1) % count) ? activeBuild : jobVisible ? jobRect : visible[i % Math.max(visible.length, 1)]?.rect; const cycle = Math.floor(t / 5 + i / 8); const rx = ((Math.sin(i * 91.7 + cycle * 17) + 1) / 2); const ry = ((Math.cos(i * 43.3 + cycle * 11) + 1) / 2); tx = target ? target.left + target.width * rx : width * rx; ty = target ? target.top + target.height * ry : height * ry; tx += Math.sin(t * .8 + i) * 12; ty += Math.cos(t * .7 + i) * 10; }
+        const ease = 1 - Math.pow(t < 1.5 ? .82 : .965, dt); a.x += (tx - a.x) * ease; a.y += (ty - a.y) * ease;
+        ctx.save(); ctx.translate(a.x, a.y); ctx.shadowColor = "#0009"; ctx.shadowBlur = 5; ctx.fillStyle = a.color; ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 16); ctx.lineTo(4.5, 12); ctx.lineTo(8, 19); ctx.lineTo(11, 17); ctx.lineTo(7, 10); ctx.lineTo(14, 10); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+        if (width > 600 || i % 3 === 0) { ctx.font = "bold 10px monospace"; const labelWidth = ctx.measureText(a.name).width + 10; ctx.fillStyle = a.color; ctx.beginPath(); ctx.roundRect(11, 12, labelWidth, 17, 3); ctx.fill(); ctx.fillStyle = "#09090b"; ctx.fillText(a.name, 16, 24); }
+        if (t > 3.6 && t < 4.3 && i % 8 === 0) { ctx.strokeStyle = a.color; ctx.globalAlpha = 1 - (t - 3.6) / .7; ctx.beginPath(); ctx.arc(0, 0, (t - 3.6) * 35, 0, Math.PI * 2); ctx.stroke(); } ctx.restore();
+      });
+      frames++; if (now - fpsAt > 1000) { onFps(Math.round(frames * 1000 / (now - fpsAt))); frames = 0; fpsAt = now; } frame = requestAnimationFrame(draw);
+    }; frame = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("resize", resize); window.removeEventListener("pointermove", move); };
+  }, [count, mode, run, onFps, snap]);
+  return <canvas ref={ref} className="swarm-canvas" aria-hidden="true" />;
+}
+
+export default function NewPortfolio() {
+  const [typed, setTyped] = useState(0); const [run, setRun] = useState(0); const [count, setCount] = useState(56); const [mode, setMode] = useState<Mode>("collab"); const [fps, setFps] = useState(60); const [phase, setPhase] = useState(0); const [audio, setAudio] = useState(false); const [drawer, setDrawer] = useState(false); const [copied, setCopied] = useState(false);
+  const [name, setName] = useState("Anish Kumar"); const [role, setRole] = useState("Developer, founder & curious human."); const [bio, setBio] = useState("I build tools and platforms around cloud storage, developer experience, and AI. I like making ambitious ideas feel simple to use."); const [accent, setAccent] = useState("#ef4444");
+  const audioCtx = useRef<AudioContext | null>(null); const audioEnabled = useRef(false);
+  const snap = useCallback(() => { if (!audioEnabled.current || !audioCtx.current) return; const ctx = audioCtx.current; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.frequency.setValueAtTime(750, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + .06); gain.gain.setValueAtTime(.04, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .06); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + .06); }, []);
+  useEffect(() => {
+    setTyped(0);
+    const root = document.querySelector<HTMLElement>(".portfolio-content");
+    if (!root) return;
+    const elements = Array.from(root.querySelectorAll<HTMLElement>("[data-build]"));
+    elements.forEach(el => { el.dataset.building = "waiting"; });
+    delete root.dataset.buildComplete;
+    let index = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    let typing: ReturnType<typeof setInterval> | undefined;
+    const placeNext = () => {
+      if (index >= elements.length) {
+        delete root.dataset.building;
+        root.dataset.buildComplete = "true";
+        setPhase(3);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      const el = elements[index];
+      el.dataset.building = "active";
+      el.dataset.worker = String(index % count);
+      const rect = el.getBoundingClientRect();
+      if (rect.top > window.innerHeight * .7 || rect.top < 0) window.scrollTo({ top: window.scrollY + rect.top - window.innerHeight * .28, behavior: "smooth" });
+      timer = setTimeout(() => {
+        el.dataset.building = "typing";
+        if (el.dataset.build === "HERO_FRAME") typing = setInterval(() => setTyped(v => Math.min(v + 1, 240)), 18);
+        timer = setTimeout(() => {
+        el.dataset.building = "placed";
+        snap();
+        index += 1;
+        timer = setTimeout(placeNext, 160);
+        }, el.dataset.build === "AVATAR_CONTAINER" ? 1200 : 1000);
+      }, 550);
+    };
+    const begin = setTimeout(() => { setPhase(1); setPhase(2); placeNext(); }, 1500);
+    return () => { clearTimeout(begin); clearTimeout(timer); if (typing) clearInterval(typing); };
+  }, [run, snap]);
+  useEffect(() => { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("in-view"); }), { threshold: .08 }); document.querySelectorAll(".reveal").forEach(el => observer.observe(el)); return () => observer.disconnect(); }, []);
+  const replay = () => { window.scrollTo({ top: 0, behavior: "instant" }); setPhase(0); setRun(v => v + 1); };
+  const toggleAudio = () => { if (!audioCtx.current) audioCtx.current = new AudioContext(); void audioCtx.current.resume(); audioEnabled.current = !audioEnabled.current; setAudio(audioEnabled.current); if (audioEnabled.current) snap(); };
+  return <main className={`new-portfolio phase-${phase} ${mode === "blueprint" ? "blueprint" : ""}`} style={{ "--accent": accent } as React.CSSProperties}>
+    <Canvas count={count} mode={mode} run={run} onFps={setFps} snap={snap} />
+    {phase === 0 && <div className="initializing"><span className="pulse-dot" /> INITIALIZING {count} COLLABORATIVE AGENTS <span className="init-muted">// CONNECTING TO CANVAS</span></div>}
+    <div className="portfolio-content" key={run}>
+      <header className="new-nav build-nav" data-build="NAV_BAR"><a className="brand" href="#top"><span className="brand-mark">A<span>K</span></span><span>ANISH KUMAR<small>INDEPENDENT BUILDER</small></span></a><nav><a href="#about">About</a><a href="#work">Work</a><a href="#stack">Stack</a><a href="#contact">Contact <span>↗</span></a></nav><span className="nav-status"><i /> AVAILABLE FOR IDEAS</span></header>
+      <section className="hero" id="top"><div className="hero-top build-title" data-build="TITLE"><span>THE PORTFOLIO OF ANISH KUMAR</span><span>EST. 2023 &nbsp; / &nbsp; INDIA</span></div><h1 className="build-title" data-build="DISPLAY_TITLE"><span className="typed-title">PORTFOLIO</span></h1><div className="hero-grid"><div className="hero-copy build-copy" data-build="HERO_FRAME"><div className="hero-intro">Hello, I’m</div><h2><em>{name.toUpperCase()}.</em></h2><div className="live-label"><span /> {role.toUpperCase()}</div><p className="typed-bio">{bio.slice(0, typed)}<span className="typing-caret">▍</span></p><div className="hero-actions"><a className="primary-link" href="#work">Explore selected work <span>↗</span></a><a className="text-link" href="#contact">Get in touch ↗</a></div><div className="hero-foot"><span>SCROLL TO EXPLORE</span><span>↓</span></div></div><div className="portrait build-avatar" data-build="AVATAR_CONTAINER"><div className="portrait-grid" /><img src="/Photo.png" alt="Anish Kumar" /><div className="portrait-top"><span>FIG. 001 / THE OPERATOR</span><span>✳</span></div><div className="portrait-bottom"><span><i /> OPERATOR ACTIVE</span><span>AK / IN</span></div></div><div className="hero-monitor build-avatar" data-build="TELEMETRY"><div className="monitor-header"><span>01. / SYSTEM STATUS</span><span>● ONLINE</span></div><h3>Building useful things.</h3><p>Cloud storage, AI services, and developer tools — built with curiosity and a focus on real problems.</p><div className="monitor-line"><span>FOCUS</span><b>FULL-STACK DEVELOPMENT</b></div><div className="monitor-line"><span>BASE</span><b>INDIA / WORLDWIDE</b></div><div className="monitor-line"><span>CURRENTLY</span><b>MEGAVAULT + XIBE</b></div><span className="monitor-tag">SYSTEM OPERATIONAL ↗</span></div></div><div className="metrics build-metrics" data-build="METRICS"><div><strong>2023<span>↗</span></strong><small>BUILDING SINCE</small></div><div><strong>20<span>+</span></strong><small>PROJECTS IN PORTFOLIO</small></div><div><strong>3</strong><small>CORE FOCUSES: CLOUD, AI, TOOLS</small></div><div className="metric-note">A work in progress.<br /><span>Always shipping, always learning.</span></div></div></section>
+      <section className="section about reveal" id="about" data-build="ABOUT"><div className="section-head"><span>01 / THE PERSON BEHIND THE PIXELS</span><span>ABOUT.MD</span></div><div className="about-grid"><h2 data-build="ABOUT_HEADING">Curiosity is<br />the <em>starting point.</em></h2><div><p data-build="ABOUT_BIO" className="large-copy">I’m an engineering student and founder who likes to turn complex problems into useful, human-friendly products.</p><p>At NMAM Institute of Technology, I’m studying Advanced Communication Technology while building Megavault and experimenting across cloud storage, AI, and developer tools.</p><div className="terminal" data-build="TERMINAL"><div><span>● ● ●</span> &nbsp; anish@workspace:~</div><code><span>$</span> cat philosophy.txt<br />Build things that solve real problems.<br />Keep learning. Ship often. Make it useful.<b>_</b></code></div></div></div></section>
+      <section className="section work reveal" id="work" data-build="PROJECTS"><div className="section-head"><span>02 / A FEW THINGS I’VE MADE</span><span>SELECTED WORK [04]</span></div><div className="section-title" data-build="PROJECT_HEADING"><h2>Ideas, <em>deployed.</em></h2><p>From a first line of code to something out in the world. Here are a few of the things I’ve been building.</p></div><div className="project-grid">{projects.map((project, i) => <a className="project" data-build={`PROJECT_${i+1}`} href={project.link} target="_blank" rel="noreferrer" key={project.title}><div className="project-image"><img src={project.image} alt="" /><span className="project-index">0{i+1} / 04</span><span className="project-arrow">↗</span></div><div className="project-info"><small>{project.category}</small><h3>{project.title}</h3><p>{project.desc}</p><div className="tags">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div></a>)}</div><a className="all-work" href="https://github.com/iotserver24" target="_blank" rel="noreferrer">MORE ON GITHUB <span>↗</span></a></section>
+      <section className="section stack reveal" id="stack" data-build="STACK"><div className="section-head"><span>03 / THE TOOLKIT</span><span>SYSTEMS MATRIX</span></div><div className="section-title" data-build="SKILLS_HEADING"><h2>Tools of the <em>trade.</em></h2><p>A growing collection of technologies I reach for to bring ideas to life.</p></div><div className="skill-grid">{skills.map(([num, title, tags]) => <div className="skill" data-build={title.toUpperCase()} key={title}><span>{num} /</span><h3>{title}</h3><p>{tags}</p></div>)}</div></section>
+      <section className="section contact reveal" id="contact" data-build="CONTACT"><div className="section-head"><span>04 / NEXT TRANSMISSION</span><span>END OF FILE, START OF SOMETHING</span></div><div className="contact-inner" data-build="CONTACT_MESSAGE"><div><div className="live-label"><span /> OPEN TO COLLABORATION</div><h2>Have an idea?<br /><em>Let’s make it real.</em></h2><p>Whether it’s a project, a question, or just a hello, my inbox is open.</p><a href="mailto:iotserver24@gmail.com" className="primary-link">Start a conversation <span>↗</span></a><button className="copy-email" onClick={() => { void navigator.clipboard.writeText("iotserver24@gmail.com").then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? "EMAIL COPIED ✓" : "COPY EMAIL ADDRESS ↗"}</button></div><div className="contact-aside"><span>FIND ME ELSEWHERE</span><a href="https://github.com/iotserver24" target="_blank" rel="noreferrer">GitHub <b>↗</b></a><a href="https://www.linkedin.com/in/anish-kumar-1a5bb133a/" target="_blank" rel="noreferrer">LinkedIn <b>↗</b></a><a href="mailto:iotserver24@gmail.com">Email <b>↗</b></a></div></div><footer><span>© {new Date().getFullYear()} ANISH KUMAR</span><span>DESIGNED TO BE BUILT TOGETHER.</span><a href="#top">BACK TO TOP ↑</a></footer></section>
+    </div>
+    <div className="dock" aria-label="Canvas controls"><span className="dock-live"><i /> LIVE CANVAS</span><button onClick={replay} title="Replay build" aria-label="Replay build">↻</button><div className="dock-divider"/><div className="count-controls" aria-label="Agent count">{[20,56,100].map(n => <button className={count === n ? "active" : ""} onClick={() => setCount(n)} key={n}>{n}</button>)}</div><div className="dock-divider"/><div className="mode-controls">{([ ["collab", "Collab"], ["blueprint", "Blueprint"], ["follow", "Follow"] ] as const).map(([value,label]) => <button className={mode === value ? "active" : ""} onClick={() => setMode(value)} key={value}>{label}</button>)}</div><div className="dock-divider"/><button onClick={toggleAudio} aria-label={audio ? "Mute sound effects" : "Enable sound effects"} title={audio ? "Mute sound effects" : "Enable sound effects"}>{audio ? "♪" : "♩"}</button><button className={drawer ? "active" : ""} onClick={() => setDrawer(!drawer)} aria-label="Customize portfolio" title="Customize portfolio">⚙</button><div className="telemetry"><span><i /> {count} AGENTS</span><span>{fps} FPS</span></div></div>
+    {drawer && <aside className="drawer"><div className="drawer-head"><div><small>CANVAS SETTINGS</small><h2>Make it yours.</h2></div><button onClick={() => setDrawer(false)} aria-label="Close settings">×</button></div><p>Preview a few details in this canvas. Changes stay in this browser session.</p><label>Name<input value={name} onChange={e => setName(e.target.value)} /></label><label>Role<input value={role} onChange={e => setRole(e.target.value)} /></label><label>Bio<textarea value={bio} onChange={e => setBio(e.target.value)} rows={5} /></label><label>Accent color<input className="color-input" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></label><div className="drawer-note">INSPECT MODE <span>Enable Blueprint to see live element dimensions.</span></div></aside>}
+  </main>;
+}
