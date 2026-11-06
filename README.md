@@ -112,3 +112,16 @@ This repo is set up to deploy on Vercel.
 ## TypeScript
 
 `next build` runs TypeScript checks. If you see missing typings errors during CI/Vercel builds, ensure dev typings (like `@types/node`) are installed.
+
+## Docker deployment
+
+Build and run the production image with Docker BuildKit:
+
+```sh
+docker build -t portfolio .
+docker run --rm -p 3000:3000 --env-file .env portfolio
+```
+
+Open `http://localhost:3000` (or `/new` for the animated portfolio). The `.env` file is not copied into the image; pass environment variables at runtime. The terminal AI endpoint needs `OPENAI_API_KEY` and optionally `OPENAI_MODEL`. If those features are not needed, omit `--env-file .env`.
+
+The build uses Bun's frozen lockfile, caches dependencies and Next.js build data, and runs Next.js's standalone server as a non-root user. Docker layer and BuildKit cache reuse make subsequent builds faster when the same builder is used.
